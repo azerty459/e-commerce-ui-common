@@ -1,3 +1,6 @@
+import {Component} from "@angular/core";
+
+@Component
 export class Produit {
   constructor(
     public ref: string,
