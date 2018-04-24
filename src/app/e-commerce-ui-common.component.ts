@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ProduitBusiness} from "./business/produit.business";
+import {Produit} from "./models/Produit";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-e-commerce-ui-common',
@@ -14,8 +16,8 @@ export class ECommerceUiCommonComponent implements OnInit {
 
   }
 
-  getProduit(){
-    this.produitBusiness.getProduit();
+  getProduit(): Observable<Produit[]>{
+    return this.produitBusiness.getProduit();
   }
 
 }
