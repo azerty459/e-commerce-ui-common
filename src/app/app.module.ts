@@ -1,6 +1,7 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+import {ProduitBusiness} from "../app/business/produit.business";
+import {Produit} from "../app/models/Produit";
 
 import { AppComponent } from './app.component';
 
@@ -10,9 +11,11 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  declarations: [
+    Produit
+  ],
+  providers: [ProduitBusiness],
+  exports: [AppComponent]
 })
 export class AppModule { }
