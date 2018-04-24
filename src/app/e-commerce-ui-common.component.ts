@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ProduitBusiness} from "./business/produit.business";
 
 @Component({
   selector: 'app-e-commerce-ui-common',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ECommerceUiCommonComponent implements OnInit {
 
-  constructor() { }
+  constructor(private produitBusiness: ProduitBusiness) { }
 
   ngOnInit() {
+
+  }
+
+  getProduit(){
+    this.produitBusiness.getProduit();
   }
 
 }
