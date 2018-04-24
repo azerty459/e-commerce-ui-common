@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 
-import {ProduitBusiness} from "../app/business/produit.business";
-import {Produit} from "../app/models/Produit";
 
 import { AppComponent } from './app.component';
 
@@ -12,10 +10,7 @@ import { AppComponent } from './app.component';
   ],
   imports: [
   ],
-  declarations: [
-    Produit
-  ],
-  providers: [ProduitBusiness],
-  exports: [AppComponent]
+  providers: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
