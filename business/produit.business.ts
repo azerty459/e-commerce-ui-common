@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs/Rx';
-import { Produit } from "../models/Produit";
-import {Injectable} from "@angular/core";
-import {Http, Response} from "@angular/http";
-import {environment} from '../../src/environments/environment'
+import { Produit } from '../models/Produit';
+import {Injectable} from '@angular/core';
+import {Http, Response} from '@angular/http';
+import {environment} from '../../src/environments/environment';
 
 
 @Injectable()
@@ -15,18 +15,18 @@ export class ProduitBusiness {
   }
 
   public getProduit(): Observable<Produit[]> {
-    return this.http.post(environment.api_url, { query: '{getAllProduit{ref nom description prixHT}}'})
+    return this.http.post(environment.api_url, { query: '{ produits {ref nom description prixHT } }'})
       .map(response => {
-        const produits = response.json().getAllProduit;
+        const produits = response.json().produits;
         return produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
       })
       .catch(this.handleError);
   }
 
   public getProduitByPagination(pageDebut: number, pageFin: number): Observable<Produit[]> {
-    return this.http.post(environment.api_url, { query: '{getAllProduit{ref nom description prixHT}}'})
+    return this.http.post(environment.api_url, { query: '{ produits { ref nom description prixHT } }'})
       .map(response => {
-        const produits = response.json().getAllProduit;
+        const produits = response.json().produits;
         produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
         return produits.slice(pageDebut, pageFin);
       })
@@ -34,7 +34,7 @@ export class ProduitBusiness {
   }
 
   public addProduit(ref: String, nom: String, description: String, prixHT: number): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{addProduit(ref: "'+ref+'", nom: "'+nom+'", description: "'+description+'", prixHT: '+prixHT+') { ref nom description prixHT}}'})
+    return this.http.post(environment.api_url, { query: 'mutation {addProduit(ref: "' + ref + '", nom: "' + nom + '", description: "' + description + '", prixHT: ' + prixHT + ') { ref nom description prixHT}}'})
       .map(response => {
         const produit = response.json().addProduit;
         return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
@@ -43,7 +43,7 @@ export class ProduitBusiness {
   }
 
   public updateProduit(ref: String, nom: String, description: String, prixHT: number): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref: "'+ref+'", nom: "'+nom+'", description: "'+description+'", prixHT: '+prixHT+') { ref nom description prixHT}}'})
+    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref: "' + ref + '", nom: "' + nom + '", description: "' + description + '", prixHT: ' + prixHT + ') { ref nom description prixHT}}'})
       .map(response => {
         console.log(response.json().updateProduit);
         const produit = response.json().updateProduit;
@@ -53,8 +53,8 @@ export class ProduitBusiness {
   }
 
   public deleteProduit(ref: String): Observable<Boolean>{
-    console.log('mutation{deleteProduit(ref: "'+ref+'")}');
-    return this.http.post(environment.api_url, { query: 'mutation{deleteProduit(ref: "'+ref+'")}'})
+    console.log('mutation{deleteProduit(ref: "' + ref + '")}');
+    return this.http.post(environment.api_url, { query: 'mutation{deleteProduit(ref: "' + ref + '")}'})
       .map(response => {
         console.log(response.json());
         return response.json().deleteProduit;
