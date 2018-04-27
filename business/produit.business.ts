@@ -3,6 +3,7 @@ import { Produit } from '../models/Produit';
 import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {environment} from '../../src/environments/environment';
+import {Pagination} from "../models/Pagination";
 
 
 @Injectable()
@@ -23,12 +24,12 @@ export class ProduitBusiness {
       .catch(this.handleError);
   }
 
-  public getProduitByPagination(pageDebut: number, pageFin: number): Observable<Produit[]> {
-    return this.http.post(environment.api_url, { query: '{ produits { ref nom description prixHT } }'})
+  public getProduitByPagination(page: number, nombreDeProduit: number): Observable<Pagination> {
+    return this.http.post(environment.api_url, { query: '{ pagination(type: "produit", page: '+page+', npp: '+nombreDeProduit+') { nbpage total produits { ref nom description prixHT } } }'})
       .map(response => {
-        const produits = response.json().produits;
-        produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
-        return produits.slice(pageDebut, pageFin);
+        const pagination = response.json().pagination;
+        var array =  pagination.produits.map((produit) => new Produit(produit.ref,produit.nom, produit.description, produit.prixHT));
+        return new Pagination(pagination.nbpage, pagination.total, array);
       })
       .catch(this.handleError);
   }
