@@ -25,11 +25,11 @@ export class ProduitBusiness {
   }
 
   public getProduitByPagination(page: number, nombreDeProduit: number): Observable<Pagination> {
-    return this.http.post(environment.api_url, { query: '{ pagination(type: "produit", page: '+page+', npp: '+nombreDeProduit+') { nbpage total produits { ref nom description prixHT } } }'})
+    return this.http.post(environment.api_url, { query: '{ pagination(type: "produit", page: '+page+', npp: '+nombreDeProduit+') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'})
       .map(response => {
         const pagination = response.json().pagination;
         var array =  pagination.produits.map((produit) => new Produit(produit.ref,produit.nom, produit.description, produit.prixHT));
-        return new Pagination(pagination.nbpage, pagination.total, array);
+        return new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array);
       })
       .catch(this.handleError);
   }

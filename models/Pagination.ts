@@ -1,6 +1,8 @@
 export class Pagination {
   constructor(
-    public nbpage: number,
+    public pageActuelle: number,
+    public pageMin: number,
+    public pageMax: number,
     public total: number,
     public tableau= [],
   ) {}
