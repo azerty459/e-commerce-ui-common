@@ -23,6 +23,26 @@ export class ProduitBusiness {
       .catch(this.handleError);
   }
 
+  /**
+   * Va chercher un seul produit grâce à sa référence
+   * @param {string} refProduit La référence du produit recherché
+   * @returns {Observable<Produit>} Le résultat de la recherche du produit.
+   */
+  public getProduitByRef(refProduit: string): Observable<Produit> {
+
+    return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT } }'})
+      .map(response => {
+
+        const produit = response.json().produits;
+        return produit;
+
+      }).catch(this.handleError);
+  }
+
+
+
+
+
   public getProduitByPagination(pageDebut: number, pageFin: number): Observable<Produit[]> {
     return this.http.post(environment.api_url, { query: '{ produits { ref nom description prixHT } }'})
       .map(response => {
@@ -52,7 +72,7 @@ export class ProduitBusiness {
       .catch(this.handleError);
   }
 
-  public deleteProduit(ref: String): Observable<Boolean>{
+  public deleteProduit(ref: String): Observable<Boolean> {
     console.log('mutation{deleteProduit(ref: "' + ref + '")}');
     return this.http.post(environment.api_url, { query: 'mutation{deleteProduit(ref: "' + ref + '")}'})
       .map(response => {
