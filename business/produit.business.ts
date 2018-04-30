@@ -24,7 +24,6 @@ export class ProduitBusiness {
       .catch(this.handleError);
   }
 
-
   /**
    * Va chercher un seul produit grâce à sa référence
    * @param {string} refProduit La référence du produit recherché
@@ -40,12 +39,6 @@ export class ProduitBusiness {
 
       }).catch(this.handleError);
   }
-
-
-
-
-
-
 
   public getProduitByPagination(page: number, nombreDeProduit: number): Observable<Pagination> {
     return this.http.post(environment.api_url, { query: '{ pagination(type: "produit", page: '+page+', npp: '+nombreDeProduit+') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'})
