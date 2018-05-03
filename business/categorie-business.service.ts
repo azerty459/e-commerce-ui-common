@@ -4,7 +4,9 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
-import {environment} from '../../src/environments/environment';
+import { environment } from '../../src/environments/environment';
+import {parseHttpResponse} from 'selenium-webdriver/http';
+import {Produit} from '../models/Produit';
 
 
 
@@ -20,19 +22,18 @@ export class CategorieBusinessService {
 
   public getAllCategories(): Observable<Categorie[]> {
 
-    return this.http.post(environment.api_url, '{ query: { getAllCategorie { nom }').catch(this.handleError);
+    // On récupère l'objet Observable retourné par la requête post
+    const postResult = this.http.post(environment.api_url, { query: '{ categories { nom } }' });
 
-    // A FAIRE: utiliser getAllCategories et l'utiliser dans le HTML pour voir ce qu'il y a dedans.
+    return postResult
+      // On mappe chaque objet du retour de la méthode post
+      .map( response => {
 
-
-
-      // .map(response => {
-      //   const categories = response.categories; // PROBLEME ICI
-      //   return categories.map((categorie) =>
-      //     new Categorie(categorie.id, categorie.nomCat, categorie.borneGauche, categorie.borneDroit, categorie.level));
-      // })
-
+        // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
+        const categories = response['categories'];
+        return categories.map( (cat) => new Categorie(cat.nom)); // Retourne un Array d'objets Categorie
+      })
+      .catch(this.handleError);
   }
-
 }
 
