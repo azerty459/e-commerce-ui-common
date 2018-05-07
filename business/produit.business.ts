@@ -31,10 +31,10 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: string): Observable<Produit> {
 
-    return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT } }'})
+    return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{nom} } }'})
       .map(response => {
 
-        const produit = response.json().produits;
+        const produit = response.json().produits[0];
         return produit;
 
       }).catch(this.handleError);
