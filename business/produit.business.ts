@@ -35,7 +35,7 @@ export class ProduitBusiness {
     return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{nom} } }'})
       .map(response => {
         const produit = response.json().produits[0];
-        var arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.nom));
+        var arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nomCat, categorie.borneGauche, categorie.borneDroit, categorie.level));
         return new Produit(produit.ref,produit.nom,produit.description,produit.prixHT, arrayCategorie);
       }).catch(this.handleError);
   }
