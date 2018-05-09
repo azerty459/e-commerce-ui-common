@@ -43,15 +43,15 @@ export class CategorieBusinessService {
   public sousCategories(nomCategorie: string): Observable<Categorie[]> {
 
     const result = this.http.post(environment.api_url,
-      { query: '{ categories(nom: "' + nomCategorie + '") { nom sousCategories { nom }}}'}); // A VOIS S'IL NE MANQUE PAS id ....
+      { query: '{ categories(nom: "' + nomCategorie + '") { nom sousCategories { nom }}}'});
 
     return result
       .map( response => {
-        const categories = response['categories'][0]['sousCategories'];
-        console.log('---------------categories dans le business');
-        console.log(categories);
-        console.log('---------------categories dans le business');
-        return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.borneGauche, sousCat.borneDroit, sousCat.level));
+        // tester si la réponse contient des sous-catégories
+        if(response['categories'].length !== 0) {
+          const categories = response['categories'][0]['sousCategories'];
+          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.borneGauche, sousCat.borneDroit, sousCat.level));
+        }
     })
       .catch(this.handleError);
   }
