@@ -4,6 +4,7 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 import {environment} from '../../src/environments/environment';
 import {Pagination} from "../models/Pagination";
+import {Categorie} from "../models/Categorie";
 
 
 @Injectable()
@@ -25,18 +26,17 @@ export class ProduitBusiness {
   }
 
   /**
-   * Va chercher un seul produit grâce à sa référence
+   * Va chercher un produit correspondant à la ref indiqué en paramètre
+   * On utilise un map pour récupérer un tableau (arrayCategorie) composé des différentes catégories du produit.
    * @param {string} refProduit La référence du produit recherché
    * @returns {Observable<Produit>} Le résultat de la recherche du produit.
    */
   public getProduitByRef(refProduit: string): Observable<Produit> {
-
-    return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT } }'})
+    return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{nom} } }'})
       .map(response => {
-
-        const produit = response.json().produits;
-        return produit;
-
+        const produit = response.json().produits[0];
+        var arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.nom));
+        return new Produit(produit.ref,produit.nom,produit.description,produit.prixHT, arrayCategorie);
       }).catch(this.handleError);
   }
 
