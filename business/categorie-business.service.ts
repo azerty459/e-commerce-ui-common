@@ -30,7 +30,7 @@ export class CategorieBusinessService {
       .map( response => {
         // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
         const categories = response['categories'];
-        return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.borneGauche, cat.borneDroit, cat.level)); // Retourne un Array d'objets Categorie dans un Observable
+        return categories.map( (cat) => new Categorie(cat.id, cat.nom)); // Retourne un Array d'objets Categorie dans un Observable
       })
       .catch(this.handleError);
   }
@@ -50,7 +50,7 @@ export class CategorieBusinessService {
         // tester si la réponse contient des sous-catégories
         if(response['categories'].length !== 0) {
           const categories = response['categories'][0]['sousCategories'];
-          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.borneGauche, sousCat.borneDroit, sousCat.level));
+          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom));
         }
     })
       .catch(this.handleError);
