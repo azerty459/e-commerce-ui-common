@@ -28,10 +28,10 @@ describe('ProduitBusinessTest', () => {
   it('should get getProduit()', () =>{
     const result = component.getProduit();
     expect(result.subscribe(async(value) => expect(value.length).toBeGreaterThan(0)));
-  })
+  });
 
   it('should get getProduitByPagination()', () =>{
     const result = component.getProduitByPagination(0, 5);
     expect(result.subscribe(async(value) => expect(value.length).toBeGreaterThan(0)));
-  })
+  });
 });
