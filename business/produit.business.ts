@@ -33,20 +33,24 @@ export class ProduitBusiness {
    * @returns {Observable<Produit>} Le résultat de la recherche du produit.
    */
   public getProduitByRef(refProduit: string): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{nom} } }'})
+    return this.http.post(environment.api_url, { query: '{ produits(ref: "' +
+      refProduit + '") {ref nom description prixHT categories{nom} } }'})
       .map(response => {
         const produit = response.json().produits[0];
-        var arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level));
-        return new Produit(produit.ref,produit.nom,produit.description,produit.prixHT, arrayCategorie);
+        const arrayCategorie = produit.categories.map(
+          (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
+        );
+        return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie);
       }).catch(this.handleError);
   }
 
   public getProduitByPagination(page: number, nombreDeProduit: number): Observable<Pagination> {
-    return this.http.post(environment.api_url, { query: '{ pagination(type: "produit", page: '+page+', npp: '+nombreDeProduit+') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'})
+    return this.http.post(environment.api_url, { query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit +
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'})
 
       .map(response => {
         const pagination = response.json().pagination;
-        var array =  pagination.produits.map((produit) => new Produit(produit.ref,produit.nom, produit.description, produit.prixHT));
+        let array =  pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
         return new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array);
       })
       .catch(this.handleError);
@@ -62,10 +66,11 @@ export class ProduitBusiness {
   }
 
   public updateProduit(ref: String, nom: String, description: String, prixHT: number): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref: "' + ref + '", nom: "' + nom + '", description: "' + description + '", prixHT: ' + prixHT + ') { ref nom description prixHT}}'})
+    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref: "' + ref +
+      '", nom: "' + nom + '", description: "' + description + '", prixHT: ' + prixHT + ') { ref nom description prixHT}}'})
       .map(response => {
         console.log(response.json().updateProduit);
-        const produit = response.json().updateProduit;
+        let produit = response.json().updateProduit;
         return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
       })
       .catch(this.handleError);
@@ -82,20 +87,23 @@ export class ProduitBusiness {
   }
 
   public addCategorieProduit(produit: Produit, categorie: Categorie): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"'+produit.ref+'",nouvelleCat:"'+categorie.nomCat+'"){ref nom categories{nom}}}'})
+    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"' + produit.ref + '",nouvelleCat:"' + categorie.nomCat +
+      '"){ref nom categories{nom}}}'})
       .map(response => {
-        const produit = response.json().updateProduit;
-        var arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level));
+        let produit = response.json().updateProduit;
+        let arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
         return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie);
       })
       .catch(this.handleError);
   }
 
   public deleteCategorieProduit(produit: Produit, categorie: Categorie): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"'+produit.ref+'",supprimerCat:"'+categorie.nomCat+'"){ref nom categories{nom}}}'})
+    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"' + produit.ref + '",supprimerCat:"' +
+      categorie.nomCat + '"){ref nom categories{nom}}}'})
       .map(response => {
-        const produit = response.json().updateProduit;
-        var arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level));
+        let produit = response.json().updateProduit;
+        let arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id,
+          categorie.nom, categorie.level, categorie.chemin));
         return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie);
       })
       .catch(this.handleError);

@@ -5,7 +5,8 @@ export class Categorie {
     public nomCat: string,
     // public borneGauche: number,
     // public borneDroit: number,
-    public level: number
+    public level: number,
+    public chemin: string
   ) {}
 
 }

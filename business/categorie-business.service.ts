@@ -23,7 +23,7 @@ export class CategorieBusinessService {
   public getAllCategories(): Observable<Categorie[]> {
 
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: '{ categories { nom level } }' });
+    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin } }' });
 
     return postResult
       // On mappe chaque objet du retour de la méthode post
@@ -32,13 +32,13 @@ export class CategorieBusinessService {
         const categories = response['categories'];
         console.log(categories);
         // Retourne un Array d'objets Categorie dans un Observable
-        return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level));
+        return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
       })
       .catch(this.handleError);
   }
 
   /**
-   * Va chercher les sous-catégories d'une catégorie
+   * Aller chercher les sous-catégories d'une catégorie
    * @param {string} nomCategorie la catégorie dont on cherche les sous-catégories.
    * @returns {Observable<Categorie[]>} Un tableau de catégories sous la forme d'un Observable.
    */
@@ -50,25 +50,15 @@ export class CategorieBusinessService {
     return result
       .map( response => {
         // tester si la réponse contient des sous-catégories
-        if(response['categories'].length !== 0) {
+        if ( response['categories'] && response['categories'].length !== 0 ) {
           const categories = response['categories'][0]['sousCategories'];
-          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.level));
+          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.level, sousCat.chemin));
         }
     })
       .catch(this.handleError);
   }
 
-  /**
-   * US#192: aller chercher toutes les catégories et leurs sous-catégories
-   * @param {string} nomCategorie
-   * @returns {Observable<Categorie>}
-   */
-  // public arborescenceCategories(): Observable<Categorie[][]> {
-  //
-  //
-  //
-  //
-  // }
+
 
 
   public ajouterCategorieParent(nomCategorie: string): Observable<Categorie> {
@@ -77,7 +67,8 @@ export class CategorieBusinessService {
   }
 
   public ajouterCategorieEnfant(nomCategorie: string, nomPere: string): Observable<Categorie> {
-    return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "' + nomCategorie + '", pere: "' + nomPere + '") { nom }}'})
+    return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
+      + nomCategorie + '", pere: "' + nomPere + '") { nom }}'})
       .catch(this.handleError);
   }
 
