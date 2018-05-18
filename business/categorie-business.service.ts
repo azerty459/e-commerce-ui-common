@@ -82,10 +82,10 @@ export class CategorieBusinessService {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
       + nomCategorie + '", pere: "' + nomPere + '") { id nom level }}'})
       .map(response => {
-        if(response.addCategorieEnfant == undefined){
+        const categorie = response['addCategorieEnfant'];
+        if(categorie == undefined){
           return response[0].message;
         }else{
-          let categorie = response.addCategorieEnfant;
           return new Categorie(categorie.id, categorie.nom, categorie.level, null);
         }
       })
@@ -96,11 +96,6 @@ export class CategorieBusinessService {
     return this.http.post(environment.api_url, { query: 'mutation { deleteCategorie(nom: "' + nomCategorie + '")}'})
       .catch(this.handleError);
   }
-
-
-
-
-
 }
 
 
