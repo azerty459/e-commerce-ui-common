@@ -5,6 +5,7 @@ import {Http, Response} from '@angular/http';
 import {environment} from '../../src/environments/environment';
 import {Pagination} from "../models/Pagination";
 import {Categorie} from "../models/Categorie";
+import {Photo} from "../models/Photo";
 
 
 @Injectable()
@@ -34,13 +35,16 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: string): Observable<Produit> {
     return this.http.post(environment.api_url, { query: '{ produits(ref: "' +
-      refProduit + '") {ref nom description prixHT categories{nom} } }'})
+      refProduit + '") {ref nom description prixHT categories{nom} photos {url} } }'})
       .map(response => {
         const produit = response.json().produits[0];
         const arrayCategorie = produit.categories.map(
           (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
         );
-        return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie);
+        const arrayPhoto = produit.photos.map(
+          (photo) => new Photo(environment.api_rest_download_url+photo.url,photo.url)
+        );
+        return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
       }).catch(this.handleError);
   }
 
@@ -107,6 +111,15 @@ export class ProduitBusiness {
         return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie);
       })
       .catch(this.handleError);
+  }
+
+  /**
+   * Permet d'envoyer la photo au backend
+   * @param {FormData} dataAEnvoyer regroupe l'ensemble des données a envoyer au backend sous forme de FormData
+   * @return {Observable<Response>} La reponse du backend
+   */
+  public ajoutPhoto(dataAEnvoyer: FormData){
+    return this.http.post(environment.api_rest_upload_url,dataAEnvoyer);
   }
 }
 
