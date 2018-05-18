@@ -61,6 +61,7 @@ export class CategorieBusinessService {
 
 
 
+
   public ajouterCategorieParent(nomCategorie: string): Observable<Categorie> {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { nom }}'})
       .catch(this.handleError);
