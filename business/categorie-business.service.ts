@@ -16,7 +16,7 @@ export class CategorieBusinessService {
   constructor(private http: HttpClient) { }
 
   private handleError (error: HttpErrorResponse | any) {
-    console.error('ApiService::handleError', error);
+    console.error('Categorie Business::handleError', error);
     return Observable.throw(error);
   }
 
@@ -30,9 +30,12 @@ export class CategorieBusinessService {
       .map( response => {
         // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
         const categories = response['categories'];
-        console.log(categories);
         // Retourne un Array d'objets Categorie dans un Observable
-        return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
+        if(categories != undefined){
+          return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
+        }else{
+          return null;
+        }
       })
       .catch(this.handleError);
   }
@@ -66,9 +69,26 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
-  public ajouterCategorieEnfant(nomCategorie: string, nomPere: string): Observable<Categorie> {
+  // public ajouterCategorieEnfant(nomCategorie: string, nomPere: string): Observable<Categorie> {
+  //   return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
+  //     + nomCategorie + '", pere: "' + nomPere + '") { nom }}'})
+  //     .map(response => {
+  //       console.log(response.json());
+  //     })
+  //     .catch(this.handleError);
+  // }
+
+  public ajouterCategorieEnfant(nomCategorie: string, nomPere: string): Observable<any> {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
-      + nomCategorie + '", pere: "' + nomPere + '") { nom }}'})
+      + nomCategorie + '", pere: "' + nomPere + '") { id nom level }}'})
+      .map(response => {
+        if(response.addCategorieEnfant == undefined){
+          return response[0].message;
+        }else{
+          let categorie = response.addCategorieEnfant;
+          return new Categorie(categorie.id, categorie.nom, categorie.level, null);
+        }
+      })
       .catch(this.handleError);
   }
 
