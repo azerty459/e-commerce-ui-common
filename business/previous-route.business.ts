@@ -20,7 +20,10 @@ export class PreviousRouteBusiness {
   public getPreviousUrl() {
     return this.previousUrl;
   }
-  public getCurrentUrl() {
+  public getCurrentUrl(){
     return this.currentUrl;
+  }
+  public setCurrentUrl( url: string) {
+    this.currentUrl=url;
   }
 }

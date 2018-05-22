@@ -19,14 +19,18 @@ export class RetourComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.previousRouteBusiness.getPreviousUrl());
+    console.log(this.previousRouteBusiness.getCurrentUrl());
     this.urlPrecedente=this.previousRouteBusiness.getPreviousUrl();
+    console.log(this.previousRouteBusiness.getPreviousUrl());
+    console.log(this.previousRouteBusiness.getCurrentUrl());
   }
 
 
 
   goBack(): void {
     if(this.urlPrecedente.startsWith(this.urlPrecedenteAttendue)){
-      this.location.back();
+      this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl());
     }
     else{
       this.router.navigate([this.urlPrecedenteAttendue]);
