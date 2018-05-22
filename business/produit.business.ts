@@ -20,7 +20,6 @@ export class ProduitBusiness {
   public getProduit(): Observable<Produit[]> {
     return this.http.post(environment.api_url, { query: '{ produits {ref nom description prixHT } }'})
       .map(response => {
-        console.log(response.json());
         const produits = response.json().produits;
         return produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
       })
@@ -35,7 +34,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: string): Observable<Produit> {
     return this.http.post(environment.api_url, { query: '{ produits(ref: "' +
-      refProduit + '") {ref nom description prixHT categories{nom} photos {url} } }'})
+      refProduit + '") {ref nom description prixHT categories{id nom} photos {url} } }'})
       .map(response => {
         const produit = response.json().produits[0];
         const arrayCategorie = produit.categories.map(
@@ -73,7 +72,6 @@ export class ProduitBusiness {
     return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref: "' + ref +
       '", nom: "' + nom + '", description: "' + description + '", prixHT: ' + prixHT + ') { ref nom description prixHT}}'})
       .map(response => {
-        console.log(response.json().updateProduit);
         let produit = response.json().updateProduit;
         return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
       })
@@ -81,18 +79,16 @@ export class ProduitBusiness {
   }
 
   public deleteProduit(ref: String): Observable<Boolean> {
-    console.log('mutation{deleteProduit(ref: "' + ref + '")}');
     return this.http.post(environment.api_url, { query: 'mutation{deleteProduit(ref: "' + ref + '")}'})
       .map(response => {
-        console.log(response.json());
         return response.json().deleteProduit;
       })
       .catch(this.handleError);
   }
 
   public addCategorieProduit(produit: Produit, categorie: Categorie): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"' + produit.ref + '",nouvelleCat:"' + categorie.nomCat +
-      '"){ref nom categories{nom}}}'})
+    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"' + produit.ref + '",nouvelleCat: ' + categorie.id +
+      '){ref nom categories{nom}}}'})
       .map(response => {
         let produit = response.json().updateProduit;
         let arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
@@ -101,14 +97,10 @@ export class ProduitBusiness {
       .catch(this.handleError);
   }
 
-  public deleteCategorieProduit(produit: Produit, categorie: Categorie): Observable<Produit> {
-    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"' + produit.ref + '",supprimerCat:"' +
-      categorie.nomCat + '"){ref nom categories{nom}}}'})
+  public deleteCategorieProduit(produit: Produit, categorie: Categorie): Observable<any> {
+    return this.http.post(environment.api_url, { query: 'mutation{updateProduit(ref:"' + produit.ref + '",supprimerCat:' + categorie.id + '){ref nom description prixHT categories{ id nom }}}'})
       .map(response => {
-        let produit = response.json().updateProduit;
-        let arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id,
-          categorie.nom, categorie.level, categorie.chemin));
-        return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie);
+        return response.json().updateProduit;
       })
       .catch(this.handleError);
   }

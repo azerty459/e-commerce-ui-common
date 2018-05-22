@@ -5,10 +5,6 @@ import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
-import {parseHttpResponse} from 'selenium-webdriver/http';
-import {Produit} from '../models/Produit';
-
-
 
 @Injectable()
 export class CategorieBusinessService {
@@ -20,6 +16,10 @@ export class CategorieBusinessService {
     return Observable.throw(error);
   }
 
+  /**
+   * Méthode permettante de retourner toutes les categories présente dans la table du même nom.
+   * @returns {Observable<Categorie[]>} Un observable qui contient un tableau de categorie
+   */
   public getAllCategories(): Observable<Categorie[]> {
 
     // On récupère l'objet Observable retourné par la requête post
@@ -35,6 +35,25 @@ export class CategorieBusinessService {
           return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
         }else{
           return null;
+        }
+      })
+      .catch(this.handleError);
+  }
+
+  public getCategorieByID(id: String): Observable<any> {
+
+    // On récupère l'objet Observable retourné par la requête post
+    const postResult = this.http.post(environment.api_url, { query: '{ categories(id: '+id+'){ id nom level chemin } }' });
+
+    return postResult
+    // On mappe chaque objet du retour de la méthode post
+      .map( response => {
+        // De la réponse de post, on ne garde que la partie "categories"
+        if(response['categories'] == undefined){
+          return response[0].message;
+        }else{
+          const categorie = response['categories'][0];
+          return new Categorie(categorie.id, categorie.nom, categorie.level, null);
         }
       })
       .catch(this.handleError);
@@ -61,39 +80,41 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
-
-
-
   public ajouterCategorieParent(nomCategorie: string): Observable<Categorie> {
-    return this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { nom }}'})
-      .catch(this.handleError);
-  }
-
-  // public ajouterCategorieEnfant(nomCategorie: string, nomPere: string): Observable<Categorie> {
-  //   return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
-  //     + nomCategorie + '", pere: "' + nomPere + '") { nom }}'})
-  //     .map(response => {
-  //       console.log(response.json());
-  //     })
-  //     .catch(this.handleError);
-  // }
-
-  public ajouterCategorieEnfant(nomCategorie: string, nomPere: string): Observable<any> {
-    return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
-      + nomCategorie + '", pere: "' + nomPere + '") { id nom level }}'})
+    return this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'})
       .map(response => {
-        const categorie = response['addCategorieEnfant'];
-        if(categorie == undefined){
+        if(response['addCategorieParent'] == undefined){
           return response[0].message;
         }else{
+          const categorie = response['addCategorieParent'];
           return new Categorie(categorie.id, categorie.nom, categorie.level, null);
         }
       })
       .catch(this.handleError);
   }
 
-  public supprimerCategorie(nomCategorie: string): Observable<Categorie> {
-    return this.http.post(environment.api_url, { query: 'mutation { deleteCategorie(nom: "' + nomCategorie + '")}'})
+  public ajouterCategorieEnfant(nomCategorie: string, idPere: number): Observable<any> {
+    console.log('mutation { addCategorieEnfant(nom: "'+ nomCategorie + '", pere: ' + idPere + ') { id nom level }}')
+    return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
+      + nomCategorie + '", pere: ' + idPere + ') { id nom level }}'})
+      .map(response => {
+        console.log(response);
+        if(response['addCategorieEnfant'] == undefined){
+          return response[0].message;
+        }else{
+          const categorie = response['addCategorieEnfant'];
+          return new Categorie(categorie.id, categorie.nom, categorie.level, null);
+        }
+      })
+      .catch(this.handleError);
+  }
+
+  public supprimerCategorie(id: number): Observable<Boolean> {
+    console.log(id);
+    return this.http.post(environment.api_url, { query: 'mutation { deleteCategorie(id: ' + id + ')}'})
+      .map(response => {
+        return response['deleteCategorie'];
+      })
       .catch(this.handleError);
   }
 }
