@@ -63,14 +63,18 @@ export class ProduitBusiness {
       .catch(this.handleError);
   }
 
-  public addProduit(produit: Produit): Observable<Produit> {
+  public addProduit(produit: Produit): Observable<any> {
     if(produit.description == null){
       produit.description = '';
     }
     return this.http.post(environment.api_url, { query: 'mutation {addProduit(ref: "' + produit.ref + '", nom: "' + produit.nom + '", description: "' + produit.description + '", prixHT: ' + produit.prixHT + ') { ref nom description prixHT}}'})
       .map(response => {
-        const produit = response['addProduit'];
-        return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+        if(response['addProduit'] == undefined){
+          return response;
+        }else{
+          const produit = response['addProduit'];
+          return new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+        }
       })
       .catch(this.handleError);
   }
