@@ -5,11 +5,6 @@ import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
-<<<<<<< HEAD
-=======
-
-
->>>>>>> US#193
 
 @Injectable()
 export class CategorieBusinessService {
@@ -22,13 +17,8 @@ export class CategorieBusinessService {
   }
 
   /**
-<<<<<<< HEAD
    * Méthode permettante de retourner toutes les categories présente dans la table du même nom.
    * @returns {Observable<Categorie[]>} Un observable qui contient un tableau de categorie
-=======
-   * Retourne toutes les catégories.
-   * @returns {Observable<Categorie[]>} la liste des catégories
->>>>>>> US#193
    */
   public getAllCategories(): Observable<Categorie[]> {
 
@@ -38,12 +28,9 @@ export class CategorieBusinessService {
     return postResult
       // On mappe chaque objet du retour de la méthode post
       .map( response => {
+        console.log(response);
         // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
         const categories = response['categories'];
-<<<<<<< HEAD
-=======
-
->>>>>>> US#193
         // Retourne un Array d'objets Categorie dans un Observable
         if(categories != undefined){
           return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
@@ -96,16 +83,6 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
->>>>>>> US#193
   public ajouterCategorieParent(nomCategorie: string): Observable<Categorie> {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'})
       .map(response => {
