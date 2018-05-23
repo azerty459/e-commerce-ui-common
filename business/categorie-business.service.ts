@@ -5,8 +5,6 @@ import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
-import {parseHttpResponse} from 'selenium-webdriver/http';
-import {Produit} from '../models/Produit';
 
 
 
@@ -20,6 +18,10 @@ export class CategorieBusinessService {
     return Observable.throw(error);
   }
 
+  /**
+   * Retourne toutes les catégories.
+   * @returns {Observable<Categorie[]>} la liste des catégories
+   */
   public getAllCategories(): Observable<Categorie[]> {
 
     // On récupère l'objet Observable retourné par la requête post
@@ -30,7 +32,7 @@ export class CategorieBusinessService {
       .map( response => {
         // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
         const categories = response['categories'];
-        console.log(categories);
+
         // Retourne un Array d'objets Categorie dans un Observable
         return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
       })
@@ -38,25 +40,30 @@ export class CategorieBusinessService {
   }
 
   /**
-   * Aller chercher les sous-catégories d'une catégorie
-   * @param {string} nomCategorie la catégorie dont on cherche les sous-catégories.
+   * Aller chercher les sous-catégories et sa catégorie parente d'une catégorie
+   * @param {string} nomCategorie la catégorie dont on cherche les sous-catégories et le parent.
    * @returns {Observable<Categorie[]>} Un tableau de catégories sous la forme d'un Observable.
    */
-  public sousCategories(nomCategorie: string): Observable<Categorie[]> {
+  public getDetails(nomCategorie: string): Observable<Categorie[]> {
 
     const result = this.http.post(environment.api_url,
-      { query: '{ categories(nom: "' + nomCategorie + '") { nom sousCategories { nom }}}'});
+      { query: '{ categories(nom: "' + nomCategorie + '") { id nom level chemin sousCategories { id nom level } parent { id nom level}}}'});
 
     return result
       .map( response => {
-        // tester si la réponse contient des sous-catégories
-        if ( response['categories'] && response['categories'].length !== 0 ) {
-          const categories = response['categories'][0]['sousCategories'];
-          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.level, sousCat.chemin));
-        }
+
+        let temp = {};
+        temp['parent'] = response['categories'][0]['parent'];
+        temp['sousCategories'] = response['categories'][0]['sousCategories'];
+
+        return temp;
+
     })
       .catch(this.handleError);
   }
+
+
+
 
 
 
