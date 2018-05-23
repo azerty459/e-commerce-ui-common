@@ -5,6 +5,11 @@ import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> US#193
 
 @Injectable()
 export class CategorieBusinessService {
@@ -17,8 +22,13 @@ export class CategorieBusinessService {
   }
 
   /**
+<<<<<<< HEAD
    * Méthode permettante de retourner toutes les categories présente dans la table du même nom.
    * @returns {Observable<Categorie[]>} Un observable qui contient un tableau de categorie
+=======
+   * Retourne toutes les catégories.
+   * @returns {Observable<Categorie[]>} la liste des catégories
+>>>>>>> US#193
    */
   public getAllCategories(): Observable<Categorie[]> {
 
@@ -30,6 +40,10 @@ export class CategorieBusinessService {
       .map( response => {
         // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
         const categories = response['categories'];
+<<<<<<< HEAD
+=======
+
+>>>>>>> US#193
         // Retourne un Array d'objets Categorie dans un Observable
         if(categories != undefined){
           return categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin));
@@ -60,26 +74,38 @@ export class CategorieBusinessService {
   }
 
   /**
-   * Aller chercher les sous-catégories d'une catégorie
-   * @param {string} nomCategorie la catégorie dont on cherche les sous-catégories.
+   * Aller chercher les sous-catégories et sa catégorie parente d'une catégorie
+   * @param {string} nomCategorie la catégorie dont on cherche les sous-catégories et le parent.
    * @returns {Observable<Categorie[]>} Un tableau de catégories sous la forme d'un Observable.
    */
-  public sousCategories(nomCategorie: string): Observable<Categorie[]> {
+  public getDetails(nomCategorie: string): Observable<Categorie[]> {
 
     const result = this.http.post(environment.api_url,
-      { query: '{ categories(nom: "' + nomCategorie + '") { nom sousCategories { nom }}}'});
+      { query: '{ categories(nom: "' + nomCategorie + '") { id nom level chemin sousCategories { id nom level } parent { id nom level}}}'});
 
     return result
       .map( response => {
-        // tester si la réponse contient des sous-catégories
-        if ( response['categories'] && response['categories'].length !== 0 ) {
-          const categories = response['categories'][0]['sousCategories'];
-          return categories.map( (sousCat) => new Categorie(sousCat.id, sousCat.nom, sousCat.level, sousCat.chemin));
-        }
+
+        let temp = {};
+        temp['parent'] = response['categories'][0]['parent'];
+        temp['sousCategories'] = response['categories'][0]['sousCategories'];
+
+        return temp;
+
     })
       .catch(this.handleError);
   }
 
+<<<<<<< HEAD
+=======
+
+
+
+
+
+
+
+>>>>>>> US#193
   public ajouterCategorieParent(nomCategorie: string): Observable<Categorie> {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'})
       .map(response => {
