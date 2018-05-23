@@ -60,6 +60,9 @@ export class ProduitBusiness {
   }
 
   public addProduit(ref: String, nom: String, description: String, prixHT: number): Observable<Produit> {
+    if(description == null){
+      description = "";
+    }
     return this.http.post(environment.api_url, { query: 'mutation {addProduit(ref: "' + ref + '", nom: "' + nom + '", description: "' + description + '", prixHT: ' + prixHT + ') { ref nom description prixHT}}'})
       .map(response => {
         const produit = response.json().addProduit;

@@ -94,7 +94,6 @@ export class CategorieBusinessService {
   }
 
   public ajouterCategorieEnfant(nomCategorie: string, idPere: number): Observable<any> {
-    console.log('mutation { addCategorieEnfant(nom: "'+ nomCategorie + '", pere: ' + idPere + ') { id nom level }}')
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
       + nomCategorie + '", pere: ' + idPere + ') { id nom level }}'})
       .map(response => {
@@ -110,7 +109,6 @@ export class CategorieBusinessService {
   }
 
   public supprimerCategorie(id: number): Observable<Boolean> {
-    console.log(id);
     return this.http.post(environment.api_url, { query: 'mutation { deleteCategorie(id: ' + id + ')}'})
       .map(response => {
         return response['deleteCategorie'];
