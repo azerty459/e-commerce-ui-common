@@ -30,7 +30,7 @@ export class RetourComponent implements OnInit {
 
   goBack(): void {
     if(this.urlPrecedente.startsWith(this.urlPrecedenteAttendue)){
-      this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl());
+      this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl()+';back='+'1');
     }
     else{
       this.router.navigate([this.urlPrecedenteAttendue]);
