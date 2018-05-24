@@ -6,11 +6,20 @@ import { Observable } from 'rxjs/Observable';
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
 
+/**
+ * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
+ */
+
 @Injectable()
 export class CategorieBusinessService {
 
   constructor(private http: HttpClient) { }
 
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
   private handleError (error: HttpErrorResponse | any) {
     console.error('Categorie Business::handleError', error);
     return Observable.throw(error);
@@ -41,6 +50,11 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
+  /**
+   * Retourne une catégorie recherchée en fonction de l'id
+   * @param {String} id ID de la catégorie à rechercher
+   * @returns {Observable<any>} Un observable contenant un message d'erreur du back-end ou un objet catégorie
+   */
   public getCategorieByID(id: String): Observable<any> {
 
     // On récupère l'objet Observable retourné par la requête post
@@ -65,6 +79,7 @@ export class CategorieBusinessService {
    * @param {string} nomCategorie la catégorie dont on cherche les sous-catégories et le parent.
    * @returns {Observable<Categorie[]>} Un tableau de catégories sous la forme d'un Observable.
    */
+  // TODO faire les retours des messages d'erreur du back-end.
   public getDetails(nomCategorie: string): Observable<Categorie[]> {
 
     const result = this.http.post(environment.api_url,
@@ -83,6 +98,12 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
+  /**
+   * Ajoute une catégorie parente
+   * @param {string} nomCategorie Nom de la catégorie parente
+   * @returns {Observable<Categorie>} Un observable contenant un objet catégorie
+   */
+  // TODO faire les retours des messages d'erreur du back-end.
   public ajouterCategorieParent(nomCategorie: string): Observable<Categorie> {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'})
       .map(response => {
@@ -96,6 +117,12 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
+  /**
+   * Ajoute une catégorie enfant à une catégorie parente.
+   * @param {string} nomCategorie Nom de la catégorie enfant à créer
+   * @param {number} idPere ID de la catégorie père
+   * @returns {Observable<any>} Un observable contenant un message d'erreur du back-end ou un objet catégorie.
+   */
   public ajouterCategorieEnfant(nomCategorie: string, idPere: number): Observable<any> {
     return this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
       + nomCategorie + '", pere: ' + idPere + ') { id nom level }}'})
@@ -111,6 +138,12 @@ export class CategorieBusinessService {
       .catch(this.handleError);
   }
 
+  /**
+   * Supprime une catégorie en fonction de l'id
+   * @param {number} id Id de la catégorie à supprimer
+   * @returns {Observable<Boolean>} Un observable contenant un boolean
+   */
+  // TODO remplacer les paramètres par l'objet en question et appliquer ce changement dans le http.post
   public supprimerCategorie(id: number): Observable<Boolean> {
     return this.http.post(environment.api_url, { query: 'mutation { deleteCategorie(id: ' + id + ')}'})
       .map(response => {
