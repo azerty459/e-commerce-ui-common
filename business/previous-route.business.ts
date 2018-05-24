@@ -11,9 +11,12 @@ export class PreviousRouteBusiness {
     this.currentUrl = this.router.url;
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
+        console.log("previous url ->"+this.currentUrl+" current url ->"+event.url);
         this.previousUrl = this.currentUrl;
         this.currentUrl = event.url;
+
       }
+
     });
   }
 

@@ -9,7 +9,7 @@ import {Router} from "@angular/router";
 })
 export class RetourComponent implements OnInit {
   urlPrecedente: string;
-  @Input() urlPrecedenteAttendue: string;
+
 
   constructor(
     private location: Location,
@@ -25,11 +25,12 @@ export class RetourComponent implements OnInit {
 
 
   goBack(): void {
-    if(this.urlPrecedente.startsWith(this.urlPrecedenteAttendue)){
-      this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl()+';back='+'1');
+    console.log("go back : url precedente" + this.urlPrecedente)
+    if(this.urlPrecedente !== '/'){
+      this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl()+';back=1');
     }
     else{
-      this.router.navigate([this.urlPrecedenteAttendue]);
+      this.router.navigate(['/']);
     }
   }
 
