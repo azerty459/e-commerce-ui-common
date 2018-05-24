@@ -5,6 +5,8 @@ import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
+import {Pagination} from "../models/Pagination";
+import {Produit} from "../models/Produit";
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -70,6 +72,24 @@ export class CategorieBusinessService {
           const categorie = response['categories'][0];
           return new Categorie(categorie.id, categorie.nom, categorie.level, null);
         }
+      })
+      .catch(this.handleError);
+  }
+
+  /**
+   * Retourne une page paginée selon les paramètres voulus.
+   * @param {number} page La page souhaitant être affichée
+   * @param {number} nombreDeCategorie Le nombre de produits voulu dans la page
+   * @returns {Observable<Pagination>} Un observable contenant un objet pagination
+   */
+  public getCategorieByPagination(page: number, nombreDeCategorie: number): Observable<Pagination> {
+    return this.http.post(environment.api_url, { query: '{ pagination(type: "categorie", page: ' + page + ', npp: ' + nombreDeCategorie +
+      ') { pageActuelle pageMin pageMax total categories { id nom level chemin  } } }'})
+
+      .map(response => {
+        const pagination = response['pagination'];
+        let array =  pagination.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
+        return new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array);
       })
       .catch(this.handleError);
   }
