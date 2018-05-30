@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {ProduitBusiness} from "./produit.business";
+import {ProduitBusiness} from "./produit.service";
 import {Observable} from "rxjs/Observable";
 import {Produit} from "../models/Produit";
 

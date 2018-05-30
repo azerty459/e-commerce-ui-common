@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { CategorieBusinessService } from './categorie-business.service';
+import { CategorieBusinessService } from './categorie.service';
 
 describe('CategorieBusinessService', () => {
   beforeEach(() => {

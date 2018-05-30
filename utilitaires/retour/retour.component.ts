@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { Location } from '@angular/common';
-import {PreviousRouteBusiness} from "../../business/previous-route.business";
+import {PreviousRouteBusiness} from "../../business/previous-route.service";
 import {Router} from "@angular/router";
 @Component({
   selector: 'app-retour',
@@ -25,7 +25,6 @@ export class RetourComponent implements OnInit {
 
 
   goBack(): void {
-    console.log("go back : url precedente" + this.urlPrecedente)
     if(this.urlPrecedente !== '/'){
       this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl()+';back=1');
     }
