@@ -235,6 +235,58 @@ export class CategorieBusinessService {
     });
     return promise;
   }
+
+  /**
+   * Méthode permettante de retourner un objet Json representant l'arbre des categories
+   * @returns {Observable<Categorie[]>} Un observable qui contient un objet json representant l'arbre des categories
+   */
+  public async getTree(): Promise<any> {
+    // On récupère l'objet Observable retourné par la requête post qui permet d'obtenir la profondeur de l'arbre
+    // formé par les categories
+    const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'})
+    let promise = new Promise<any>((resolve) => {
+      postResult
+      // On transforme en promise
+        .toPromise()
+        .then(
+          response => {
+            // On résout notre promesse
+            resolve(response['categories'][0]['profondeur']);
+          }
+        )
+        .catch(this.handleError);
+    });
+    let profondeur = await promise;
+    if (profondeur != null && profondeur != undefined) {
+
+      //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
+      //  profondeur.
+      let query = '{ categories { nom id ';
+      for (let i = 0; i < profondeur; i++) {
+        query += 'sousCategories{ nom id ';
+      }
+      for (let i = 0; i < profondeur; i++) {
+        query += '}';
+      }
+      query += '}}';
+
+      // On execute cette requete
+      const postResult = this.http.post(environment.api_url, {query: query});
+      let promise = new Promise<any>((resolve) => {
+        postResult
+        // On transforme en promise
+          .toPromise()
+          .then(
+            response => {
+              // On résout notre promesse et on renvoi l'objet json
+              resolve(response);
+            }
+          )
+          .catch(this.handleError);
+      });
+      return promise;
+    }
+  }
 }
 
 
