@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { PreviousRouteBusiness } from "./previous-route.business";
+import { PreviousRouteBusiness } from "./previous-route.service";
 
 describe('PreviousRouteService', () => {
   beforeEach(() => {

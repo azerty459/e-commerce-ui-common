@@ -1,7 +1,7 @@
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-
-import { Observable } from 'rxjs/Observable';
 
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
@@ -25,7 +25,7 @@ export class CategorieBusinessService {
    */
   private handleError (error: HttpErrorResponse | any) {
     console.error('Categorie Business::handleError', error);
-    return Observable.throw(error);
+    return observableThrowError(error);
   }
 
   /**

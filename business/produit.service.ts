@@ -1,3 +1,5 @@
+
+import {throwError as observableThrowError} from 'rxjs';
 import {Observable} from 'rxjs/Rx';
 import {Produit} from '../models/Produit';
 import {Injectable} from '@angular/core';
@@ -23,7 +25,7 @@ export class ProduitBusiness {
    */
   private handleError(error: Response | any) {
     console.error('ApiService::handleError', error);
-    return Observable.throw(error);
+    return observableThrowError(error);
   }
 
   /**
