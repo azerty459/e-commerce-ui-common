@@ -6,9 +6,11 @@
 export class CategorieFlatNode {
   nomCategorie: string;
   nomCategorieModifie: string;
+  idParent: number;
   id: any;
   level: number;
   expandable: boolean;
   enableToolNode: boolean=false;
   isInEditMode: boolean=false;
+  justDeleted: boolean=false;
 }

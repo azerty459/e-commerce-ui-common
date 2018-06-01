@@ -58,6 +58,9 @@ export class ArbreService {
         // On rappelle donc en récursif la méthode
         node.children = this.buildFileTree(values.sousCategories, level + 1);
       }
+      for (let i in node.children){
+        node.children[i].idParent=node.id;
+      }
       data.push(node);
     }
     return data;
@@ -76,7 +79,9 @@ export class ArbreService {
     flatNode.level = level;
     flatNode.expandable = !!node.children;
     flatNode.nomCategorieModifie = flatNode.nomCategorie;
+    flatNode.idParent = node.idParent;
     return flatNode;
+
   };
 
   /**
@@ -107,6 +112,12 @@ export class ArbreService {
   public getChildren = (node: CategorieNode): Observable<CategorieNode[]> => {
     return observableOf(node.children);
   };
+
+
+
+
+
+
 
 
 }
