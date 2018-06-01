@@ -287,6 +287,33 @@ export class CategorieBusinessService {
       return promise;
     }
   }
+
+  public updateCategorie(id: number, nouveauNom: string): Promise<any> {
+    // On récupère l'objet Observable retourné par la requête post
+    const postResult = this.http.post(environment.api_url, { query: 'mutation { updateCategorie(id: '+id+', nom:"'+nouveauNom+'"){ id nom level }}'});
+    // On créer une promesse
+    let promise = new Promise<any>((resolve) => {
+      postResult
+      // On transforme en promesse
+        .toPromise()
+        .then(
+          response =>{
+            let retour;
+            console.log(response);
+            if(response['updateCategorie'] == undefined){
+              retour = response[0].message;
+            }else{
+              const categorie = response['updateCategorie'];
+              retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
+            }
+            // On résout notre promesse
+            resolve(retour);
+          }
+        )
+        .catch(this.handleError);
+    });
+    return promise;
+  }
 }
 
 

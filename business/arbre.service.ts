@@ -18,7 +18,7 @@ export class ArbreService {
 
   get data(): CategorieNode[] { return this.dataChange.value; }
 
-  constructor(private categorieBusiness: CategorieBusinessService) {
+  constructor(public categorieBusiness: CategorieBusinessService) {
     this.initialize();
   }
 
@@ -75,6 +75,7 @@ export class ArbreService {
     flatNode.id = node.id;
     flatNode.level = level;
     flatNode.expandable = !!node.children;
+    flatNode.nomCategorieModifie = flatNode.nomCategorie;
     return flatNode;
   };
 
@@ -96,6 +97,7 @@ export class ArbreService {
     return node.expandable;
   };
 
+
   /**
    * Permet d'obtenir les enfants d'une Node
    * @param {CategorieNode} node
@@ -105,4 +107,6 @@ export class ArbreService {
   public getChildren = (node: CategorieNode): Observable<CategorieNode[]> => {
     return observableOf(node.children);
   };
+
+
 }
