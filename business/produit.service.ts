@@ -1,6 +1,6 @@
 
 import {throwError as observableThrowError} from 'rxjs';
-import {Observable} from 'rxjs/Rx';
+import { ObservableInput} from 'rxjs/index';
 import {Produit} from '../models/Produit';
 import {Injectable} from '@angular/core';
 import {environment} from '../../src/environments/environment';

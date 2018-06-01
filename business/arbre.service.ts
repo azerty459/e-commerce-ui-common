@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs/index';
 import {CategorieNode} from "../models/CategorieNode";
 import {CategorieBusinessService} from "./categorie.service";
 import {CategorieFlatNode} from "../models/CategorieFlatNode";
