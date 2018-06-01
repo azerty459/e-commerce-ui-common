@@ -60,7 +60,7 @@ export class CategorieBusinessService {
    * @param {String} id ID de la catégorie à rechercher
    * @returns {Observable<any>} Un observable contenant un message d'erreur du back-end ou un objet catégorie
    */
-  public getCategorieByID(id: String): Promise<any> {
+  public getCategorieByID(id: number): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, { query: '{ categories(id: '+id+'){ id nom level chemin } }' });
     // On créer une promesse
