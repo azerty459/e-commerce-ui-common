@@ -6,7 +6,7 @@ export class Produit {
     public nom: string,
     public description: string,
     public prixHT: number,
-    public arrayCategorie= [Categorie],
-    public arrayPhoto= [Photo]
+    public arrayCategorie= new Array<Categorie>(),
+    public arrayPhoto= new Array<Photo>()
   ) {}
 }

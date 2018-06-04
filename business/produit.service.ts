@@ -1,4 +1,3 @@
-
 import {throwError as observableThrowError} from 'rxjs';
 import { ObservableInput} from 'rxjs/index';
 import {Produit} from '../models/Produit';
@@ -41,7 +40,7 @@ export class ProduitBusiness {
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             const produits = response['produits'];
             // On résout notre promesse
             resolve(produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT)));
@@ -67,7 +66,7 @@ export class ProduitBusiness {
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             const produits = response['produits'];
             // On résout notre promesse
             if (response['produits'] == undefined) {
@@ -80,7 +79,7 @@ export class ProduitBusiness {
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(environment.api_rest_download_url + photo.url, photo.url)
               );
-              resolve (new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
+              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
             }
           }
         )
@@ -107,7 +106,7 @@ export class ProduitBusiness {
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             const pagination = response['pagination'];
             let array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
@@ -135,7 +134,7 @@ export class ProduitBusiness {
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             if (response['addProduit'] == undefined) {
               resolve(response);
             } else {
@@ -149,21 +148,53 @@ export class ProduitBusiness {
     return promise;
   }
 
-  public updateProduit(produit: Produit): Promise<Produit> {
+  public updateProduit(produit: Produit): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
+
+    let requete = 'mutation{updateProduit(produit: { ' +
+      'referenceProduit: "' + produit.ref + '", ' +
+      'nom: "' + produit.nom + '", ' +
+      'description: "' + produit.description + '", ' +
+      'prixHT: ' + produit.prixHT + ', ' +
+      'categories:[ ';
+
+    for( let categorie of produit.arrayCategorie) {
+      requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
+    }
+
+    requete += '],' +
+      'photos: [';
+
+    for( let photo of produit.arrayPhoto) {
+      requete += '{ url: "' + photo.url + '"},';
+    }
+
+    requete += '],' +
+      '})' +
+      '{ref nom description prixHT categories{id nom} photos {url} }' +
+      '}';
     const postResult = this.http.post(environment.api_url, {
-      query: 'mutation{updateProduit(ref: "' + produit.ref +
-      '", nom: "' + produit.nom + '", description: "' + produit.description + '", prixHT: ' + produit.prixHT + ') { ref nom description prixHT}}'
+      query: requete
     });
     // On créer une promesse
-    let promise = new Promise<Produit>((resolve) => {
+    let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
-            let produit = response['updateProduit'];
-            resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
+          response => {
+            if (response['updateProduit'] == undefined) {
+              resolve(response);
+            } else {
+              const produit = response['updateProduit'];
+              const arrayCategorie = produit.categories.map(
+                (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
+              );
+              const arrayPhoto = produit.photos.map(
+                (photo) => new Photo(environment.api_rest_download_url + photo.url, photo.url)
+              );
+              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
+            }
           }
         )
         .catch(this.handleError);
@@ -180,7 +211,7 @@ export class ProduitBusiness {
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             resolve(response['deleteProduit']);
           }
         )
@@ -195,24 +226,29 @@ export class ProduitBusiness {
    * @param {Categorie} categorie L'objet catégorie associée au produit
    * @returns {Observable<Produit>} Retourne un obersable contenant un objet produit
    */
-  public addCategorieProduit(produit: Produit, categorie: Categorie): Promise<Produit> {
+  public addCategorieProduit(produit: Produit, categorie: Categorie): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {
       query: 'mutation{updateProduit(ref:"' + produit.ref + '",nouvelleCat: ' + categorie.id +
       '){ref nom description prixHT categories{id nom} photos {url} }}'
     });
     // On créer une promesse
-    let promise = new Promise<Produit>((resolve) => {
+    let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promesse
         .toPromise()
         .then(
           response => {
+            let retour;
             console.log(response);
-            let produit = response['updateProduit'];
-            let arrayCategorie = produit.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
+            if (response['updateProduit'] == undefined) {
+              retour = response[0].message;
+            } else {
+              const categorie = response['updateProduit'];
+              retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
+            }
             // On résout notre promesse
-            resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie));
+            resolve(retour);
           }
         )
         .catch(this.handleError);
@@ -236,7 +272,6 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            console.log(response);
             // On résout notre promesse
             resolve(response['updateProduit']);
           }
