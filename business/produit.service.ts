@@ -30,7 +30,7 @@ export class ProduitBusiness {
 
   /**
    * Retourne un observable contenant une liste de produit contenu dans la base de données.
-   * @returns {Observable<Produit[]>} Un observable contenant une liste de produit
+   * @returns {Promise<Produit[]>} Un observable contenant une liste de produit
    */
   public getProduit(): Promise<Produit[]> {
     // On récupère l'objet Observable retourné par la requête post
@@ -53,10 +53,32 @@ export class ProduitBusiness {
   }
 
   /**
+   * Recherche de produits dont le nom contient une chaîne de catactères donnée en paramètres.
+   * @param {String} name la chaîne de catactères recherchée
+   * @returns {Promise<Produit>} les produits trouvés
+   */
+  public getProduitByName(name: String): Promise<Produit[]> {
+
+    const postResult = this.http.post(environment.api_url, {query: 'produits(nom:' +
+      name + ') {ref nom description prixHT categories{id nom} photos {url}}'});
+
+    const promise = new Promise<Produit[]>((resolve) => {
+      postResult.toPromise().then((response) => {
+        const produits = response['produits'];
+        resolve(produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT)));
+      })
+        .catch(this.handleError);
+    });
+
+    return promise;
+
+  }
+
+  /**
    * Va chercher un produit correspondant à la ref indiqué en paramètre
    * On utilise un map pour récupérer un tableau (arrayCategorie) composé des différentes catégories du produit.
    * @param {string} refProduit La référence du produit recherché
-   * @returns {Observable<Produit>} Le résultat de la recherche du produit.
+   * @returns {Promise<Produit>} Le résultat de la recherche du produit.
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
