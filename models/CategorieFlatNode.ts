@@ -12,5 +12,6 @@ export class CategorieFlatNode {
   expandable: boolean;
   enableToolNode: boolean=false;
   isInEditMode: boolean=false;
-  justDeleted: boolean=false;
 }
+
+

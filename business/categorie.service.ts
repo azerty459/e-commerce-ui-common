@@ -251,7 +251,14 @@ export class CategorieBusinessService {
         .then(
           response => {
             // On résout notre promesse
-            resolve(response['categories'][0]['profondeur']);
+            console.log(response);
+            if(response['categories']!=0){
+              resolve(response['categories'][0]['profondeur']);
+            }else {
+              // Pas de categorie*
+              console.log("pas de categorie");
+              resolve(null);
+            }
           }
         )
         .catch(this.handleError);
