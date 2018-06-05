@@ -173,6 +173,7 @@ export class ProduitBusiness {
       '})' +
       '{ref nom description prixHT categories{id nom} photos {url} }' +
       '}';
+    console.log(requete);
     const postResult = this.http.post(environment.api_url, {
       query: requete
     });
