@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/index';
-import {CategorieNode} from "../models/CategorieNode";
-import {CategorieBusinessService} from "./categorie.service";
-import {CategorieFlatNode} from "../models/CategorieFlatNode";
-import {Observable, of as observableOf} from "rxjs/index";
+import {CategorieNode} from '../models/CategorieNode';
+import {CategorieBusinessService} from './categorie.service';
+import {CategorieFlatNode} from '../models/CategorieFlatNode';
+import {Observable, of as observableOf} from 'rxjs/index';
 
 /**
  * Service gérant les arbres. Il peut construire un arbre à partir d'un objet json strucuté.
@@ -16,7 +16,7 @@ export class ArbreService {
    * vrai si l'arbre possède des categories, false sinon
    * @type {boolean}
    */
-  hasCategories : boolean=true;
+  hasCategories = true;
   dataChange: BehaviorSubject<CategorieNode[]> = new BehaviorSubject<CategorieNode[]>([]);
   /** Map de flat node vers nested node, elle nous permet de touver la nested node a modifier*/
   flatNodeMap: Map<CategorieFlatNode, CategorieNode> = new Map<CategorieFlatNode, CategorieNode>();
@@ -29,9 +29,19 @@ export class ArbreService {
    * @return {CategorieFlatNode} FlatNode prête à être utilisé pour générer l'arbre
    */
   transformerNodeToFlatNode = (node: CategorieNode, level: number) => {
-    let flatNode = node.nomCategorie != undefined && this.nestedNodeMap.has(node) && this.nestedNodeMap.get(node)!.nomCategorie === node.nomCategorie
+    const nomCatNotUndefined = node.nomCategorie !== undefined;
+    const nestedNodeMapHasNode = this.nestedNodeMap.has(node);
+    let nodeAlreadyExist;
+    if (this.nestedNodeMap.get(node) !== undefined) {
+      nodeAlreadyExist = this.nestedNodeMap.get(node).nomCategorie === node.nomCategorie;
+    } else {
+      nodeAlreadyExist = false;
+    }
+
+    const flatNode = nomCatNotUndefined && nestedNodeMapHasNode && nodeAlreadyExist
       ? this.nestedNodeMap.get(node)!
       : new CategorieFlatNode();
+
     flatNode.nomCategorie = node.nomCategorie;
     flatNode.id = node.id;
     flatNode.level = level;
@@ -46,8 +56,8 @@ export class ArbreService {
   };
   /**
    * Permet d'obtenir le niveau d'un CategorieFlatNode
-   * @param {CategorieFlatNode} Flat Node
    * @return {number} le niveau
+   * @param node la node concerné
    */
   public getLevel = (node: CategorieFlatNode) => {
     return node.level;
@@ -84,15 +94,15 @@ export class ArbreService {
    */
   async initialize() {
     const dataObject = await this.categorieBusiness.getTree();
-    if(dataObject!=null){
+    if (dataObject !== null && dataObject !== undefined && dataObject.categories !== undefined) {
       // Construit l'arbre composé de node à partir de l'objet Json. Le resulat est une liste de 'CategorieNode' avec
       // des file node imbriqué en tant qu'enfant
       const data = this.buildFileTree(dataObject.categories, 0);
       // Notifie le changement
       this.dataChange.next(data);
-      this.hasCategories=true;
-    }else {
-      this.hasCategories=false;
+      this.hasCategories = true;
+    } else {
+      this.hasCategories = false;
     }
 
     }
@@ -103,11 +113,11 @@ export class ArbreService {
    * @return {CategorieNode[]} liste d'objet CategorieNode qui représente chaque élement(branche ou feuille) de l'arbre.
    */
   buildFileTree(value: any, level: number): CategorieNode[] {
-    let data: any[] = [];
+    const data: any[] = [];
 
-    for (let k in value) {
-      let values = value[k];
-      let node = new CategorieNode();
+    for (const k in value) {
+      const values = value[k];
+      const node = new CategorieNode();
       node.nomCategorie = values.nom;
       node.id = values.id;
       // On test l'objet pour savoir si il possède des sous categories
@@ -119,7 +129,7 @@ export class ArbreService {
         // On rappelle donc en récursif la méthode
         node.children = this.buildFileTree(values.sousCategories, level + 1);
       }
-      for (let i in node.children) {
+      for (const i in node.children) {
         node.children[i].idParent = node.id;
       }
       data.push(node);
@@ -132,14 +142,14 @@ export class ArbreService {
    * @param {CategorieNode} nodeParent la node parent qui contient l'enfant a supprimer
    * @param {CategorieNode} nodeToDelete la node a supprimer
    */
-  public deleteChild(nodeParent: CategorieNode, nodeToDelete:CategorieNode) {
-    for(let i in nodeParent.children){
-      if(nodeParent.children[i].id == nodeToDelete.id){
-        nodeParent.children.splice(parseInt(i),1);
+  public deleteChild(nodeParent: CategorieNode, nodeToDelete: CategorieNode) {
+    for (const i in nodeParent.children) {
+      if (nodeParent.children[i].id === nodeToDelete.id) {
+        nodeParent.children.splice(parseInt(i, 10 ), 1 );
       }
     }
-    if(nodeParent.children.length === 0 ){
-      nodeParent.children=undefined;
+    if (nodeParent.children.length === 0 ) {
+      nodeParent.children = undefined;
     }
     this.dataChange.next(this.data);
   }
