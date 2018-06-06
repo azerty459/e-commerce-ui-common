@@ -104,34 +104,46 @@ export class ProduitBusiness {
   }
 
 
-
-
+  /**
+   * Communique avec l'API pour aller chercher le texte recherché et selon la pagination demandée
+   * @param {number} page ne n° de page sur laquelle on est
+   * @param {number} nombreDeProduit le nombre de produits à afficher sur la page
+   * @param {string} text le texte recherché
+   * @returns {Promise<Pagination>} une promesse de Pagination
+   */
   public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string): Promise<Pagination> {
 
-    console.log('getProduitByPaginationSearch');
-
     this.searchedText = text;
-
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText +
       '") { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'
     });
 
-    return postResult
-      .toPromise()
-      .then((response) => {
-        return new Pagination(response.pageActuelle, response.pageMin, response.pageMax, response.total, response.tableau);
-      });
+    const promise = new Promise<Pagination> ( (resolve, reject) => {
+
+      postResult.toPromise().then(
+        (response) => {
+          const pagination = response['pagination'];
+          const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
+          resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
+        }
+      );
+    });
+
+    return promise;
   }
 
-  public search(text: string): void {
+  /**
+   * Va chercher les données à afficher selon la recherche donnée en paramètre
+   * @param {string} text le texte recherché
+   * @returns {Promise<void>}
+   */
+  public async search(text: string) {
 
-    // Récupérer la nouvelle liste et la passer à l'observable
-    const result = this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text)
-      .then((resultat) => {
-        this.subject.next(resultat);
-      });
+    const resultat = await this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text);
+    this.subject.next(resultat);
+
   }
 
 
@@ -169,31 +181,6 @@ export class ProduitBusiness {
     return promise;
 
   }
-
-  // /**
-  //  * Recherche de produits dont le nom contient une chaîne de catactères donnée en paramètres.
-  //  * @param {String} name la chaîne de catactères recherchée
-  //  * @returns {Promise<Produit>} les produits trouvés
-  //  */
-  // public getProduitByName(name: String): Promise<Produit[]> {
-  //
-  //   const postResult = this.http.post(environment.api_url, {query: '{produits(nom: "' +
-  //     name + '") {ref nom description prixHT categories {id, nom} photos { url }}}'});
-  //
-  //   const promise = new Promise<Produit[]>((resolve) => {
-  //     postResult.toPromise().then((response) => {
-  //       const produits = response['produits'];
-  //       resolve(produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT)));
-  //     })
-  //       .catch(this.handleError);
-  //   });
-  //
-  //   return promise;
-  //
-  // }
-
-
-
 
 
   /**
