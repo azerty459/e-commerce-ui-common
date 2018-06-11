@@ -154,5 +154,32 @@ export class ArbreService {
     this.dataChange.next(this.data);
   }
 
+  /** Ajoute une nouvelle categorie vide à l'arbre */
+  insertItem(parent: CategorieNode, name: string) {
+    // un parent null signifie qu'on souhaite une categorie de level 0
+    if (parent === null ) {
+      this.data.push(<CategorieNode>{nomCategorie: ''});
+      this.dataChange.next(this.data);
+    } else {
+      const child = <CategorieNode>{nomCategorie: name, idParent: parent.id};
+      console.log(child.idParent);
+      if ( parent.children === undefined) {
+        parent.children = [];
+      }
+      parent.children.push(child);
+      this.dataChange.next(this.data);
+    }
+
+  }
+
+  /**
+   * Met a jour une categorie de l'arbre
+   * @param {CategorieNode} node
+   * @param {string} name
+   */
+  updateCategorie(node: CategorieNode, name: string) {
+    node.nomCategorie = name;
+    this.dataChange.next(this.data);
+  }
 
 }
