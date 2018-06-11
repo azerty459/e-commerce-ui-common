@@ -252,11 +252,11 @@ export class CategorieBusinessService {
           response => {
             // On résout notre promesse
             console.log(response);
-            if(response['categories']!=0){
+            if(response['categories'] !== 0) {
               resolve(response['categories'][0]['profondeur']);
             }else {
               // Pas de categorie*
-              console.log("pas de categorie");
+              console.log('pas de categorie');
               resolve(null);
             }
           }

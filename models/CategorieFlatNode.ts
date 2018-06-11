@@ -10,8 +10,8 @@ export class CategorieFlatNode {
   id: any;
   level: number;
   expandable: boolean;
-  enableToolNode: boolean=false;
-  isInEditMode: boolean=false;
+  enableToolNode: boolean = false;
+  isInEditMode: boolean = false;
 }
 
 
