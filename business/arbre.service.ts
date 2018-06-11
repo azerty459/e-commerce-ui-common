@@ -105,7 +105,7 @@ export class ArbreService {
       this.hasCategories = false;
     }
 
-    }
+  }
   /**
    * Permet de construire la structure de l'arbre
    * @param value objet Json
