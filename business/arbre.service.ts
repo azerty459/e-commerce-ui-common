@@ -84,6 +84,10 @@ export class ArbreService {
     this.initialize();
   }
 
+  /**
+   * Permet d'obtenir les données de l'arbre
+   * @returns {CategorieNode[]}
+   */
   get data(): CategorieNode[] {
     return this.dataChange.value;
   }
@@ -154,14 +158,17 @@ export class ArbreService {
     this.dataChange.next(this.data);
   }
 
-  /** Ajoute une nouvelle categorie vide à l'arbre */
-  insertItem(parent: CategorieNode, name: string) {
+  /** Ajoute une nouvelle categorie vide à l'arbre
+   * @param {CategorieNode} parent le parent de la catégorie à créer
+   * @param {string} nomCategorie le nom de la categorie a associer à la nouvelle catégorier
+   */
+  insertItem(parent: CategorieNode, nomCategorie: string) {
     // un parent null signifie qu'on souhaite une categorie de level 0
     if (parent === null ) {
       this.data.push(<CategorieNode>{nomCategorie: ''});
       this.dataChange.next(this.data);
     } else {
-      const child = <CategorieNode>{nomCategorie: name, idParent: parent.id};
+      const child = <CategorieNode>{nomCategorie: nomCategorie , idParent: parent.id};
       console.log(child.idParent);
       if ( parent.children === undefined) {
         parent.children = [];
@@ -174,11 +181,11 @@ export class ArbreService {
 
   /**
    * Met a jour une categorie de l'arbre
-   * @param {CategorieNode} node
-   * @param {string} name
+   * @param {CategorieNode} node a mettre a jour
+   * @param {string} nomCategorie nom de la categorie a associer
    */
-  updateCategorie(node: CategorieNode, name: string) {
-    node.nomCategorie = name;
+  updateCategorie(node: CategorieNode, nomCategorie: string) {
+    node.nomCategorie = nomCategorie ;
     this.dataChange.next(this.data);
   }
 
