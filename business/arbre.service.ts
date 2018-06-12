@@ -102,13 +102,11 @@ export class ArbreService {
       // Construit l'arbre composé de node à partir de l'objet Json. Le resulat est une liste de 'CategorieNode' avec
       // des file node imbriqué en tant qu'enfant
       const data = this.buildFileTree(dataObject.categories, 0);
+      this.hasCategories = dataObject.categories.length !== 0;
       // Notifie le changement
       this.dataChange.next(data);
-      this.hasCategories = true;
-    } else {
-      this.hasCategories = false;
-    }
 
+    }
   }
   /**
    * Permet de construire la structure de l'arbre
@@ -175,6 +173,9 @@ export class ArbreService {
       }
       parent.children.push(child);
       this.dataChange.next(this.data);
+    }
+    if (!this.hasCategories){
+      this.hasCategories = true;
     }
 
   }

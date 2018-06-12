@@ -252,19 +252,19 @@ export class CategorieBusinessService {
           response => {
             // On résout notre promesse
             console.log(response);
-            if(response['categories'] !== 0) {
+            if (response['categories'].length !== 0) {
               resolve(response['categories'][0]['profondeur']);
-            }else {
+            } else {
               // Pas de categorie*
               console.log('pas de categorie');
-              resolve(null);
+              resolve([]);
             }
           }
         )
         .catch(this.handleError);
     });
-    let profondeur = await promise;
-    if (profondeur != null && profondeur != undefined) {
+    const profondeur = await promise;
+    if (profondeur != null && profondeur !== undefined) {
 
       //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
       //  profondeur.
