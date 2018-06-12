@@ -155,26 +155,25 @@ export class ArbreService {
     }
     this.dataChange.next(this.data);
   }
-
   /** Ajoute une nouvelle categorie vide à l'arbre
-   * @param {CategorieNode} parent le parent de la catégorie à créer
-   * @param {string} nomCategorie le nom de la categorie a associer à la nouvelle catégorier
+   * @param {CategorieNode} parent le parent de la catégorie à inserer
+   * @param {string} nodeToInsert la node a inserer
    */
-  insertItem(parent: CategorieNode, nomCategorie: string) {
+  insertItem(parent: CategorieNode, nodeToInsert: CategorieNode) {
     // un parent null signifie qu'on souhaite une categorie de level 0
     if (parent === null ) {
-      this.data.push(<CategorieNode>{nomCategorie: ''});
+      this.data.push(nodeToInsert);
       this.dataChange.next(this.data);
     } else {
-      const child = <CategorieNode>{nomCategorie: nomCategorie , idParent: parent.id};
-      console.log(child.idParent);
+      nodeToInsert.idParent = parent.id;
+      const child = nodeToInsert;
       if ( parent.children === undefined) {
         parent.children = [];
       }
       parent.children.push(child);
       this.dataChange.next(this.data);
     }
-    if (!this.hasCategories){
+    if (!this.hasCategories) {
       this.hasCategories = true;
     }
 
@@ -186,7 +185,7 @@ export class ArbreService {
    * @param {string} nomCategorie nom de la categorie a associer
    */
   updateCategorie(node: CategorieNode, nomCategorie: string) {
-    node.nomCategorie = nomCategorie ;
+    node.nomCategorie = nomCategorie;
     this.dataChange.next(this.data);
   }
 
