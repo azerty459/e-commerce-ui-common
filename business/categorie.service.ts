@@ -6,8 +6,6 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
 import {Pagination} from "../models/Pagination";
-import {Produit} from "../models/Produit";
-import {promise} from "selenium-webdriver";
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
