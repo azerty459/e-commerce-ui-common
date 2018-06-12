@@ -4,7 +4,7 @@
  */
 export class CategorieNode {
   children: CategorieNode[];
-  idParent:number;
+  idParent: number;
   nomCategorie: string;
   id: any;
 }

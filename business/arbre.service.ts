@@ -84,6 +84,10 @@ export class ArbreService {
     this.initialize();
   }
 
+  /**
+   * Permet d'obtenir les données de l'arbre
+   * @returns {CategorieNode[]}
+   */
   get data(): CategorieNode[] {
     return this.dataChange.value;
   }
@@ -105,7 +109,7 @@ export class ArbreService {
       this.hasCategories = false;
     }
 
-    }
+  }
   /**
    * Permet de construire la structure de l'arbre
    * @param value objet Json
@@ -154,5 +158,35 @@ export class ArbreService {
     this.dataChange.next(this.data);
   }
 
+  /** Ajoute une nouvelle categorie vide à l'arbre
+   * @param {CategorieNode} parent le parent de la catégorie à créer
+   * @param {string} nomCategorie le nom de la categorie a associer à la nouvelle catégorier
+   */
+  insertItem(parent: CategorieNode, nomCategorie: string) {
+    // un parent null signifie qu'on souhaite une categorie de level 0
+    if (parent === null ) {
+      this.data.push(<CategorieNode>{nomCategorie: ''});
+      this.dataChange.next(this.data);
+    } else {
+      const child = <CategorieNode>{nomCategorie: nomCategorie , idParent: parent.id};
+      console.log(child.idParent);
+      if ( parent.children === undefined) {
+        parent.children = [];
+      }
+      parent.children.push(child);
+      this.dataChange.next(this.data);
+    }
+
+  }
+
+  /**
+   * Met a jour une categorie de l'arbre
+   * @param {CategorieNode} node a mettre a jour
+   * @param {string} nomCategorie nom de la categorie a associer
+   */
+  updateCategorie(node: CategorieNode, nomCategorie: string) {
+    node.nomCategorie = nomCategorie ;
+    this.dataChange.next(this.data);
+  }
 
 }
