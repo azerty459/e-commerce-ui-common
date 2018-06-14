@@ -41,6 +41,29 @@ export class CategoriedataService {
 
     return promise;
   }
+  public moveCategorie(categorieParent: Categorie, categorieEnfant: Categorie) {
+    // On récupère l'objet Observable retourné par la requête post
+    if (categorieEnfant === undefined) {
+      categorieEnfant = new Categorie(0, '', null, null);
+    }
+    const postResult = this.http.post(environment.api_url, {
+      query: 'mutation { moveCategorie(idADeplacer:' + categorieParent.id + ',idNouveauParent:' + categorieEnfant.id + ')}'
+    });
+    // On créer une promesse
+    const promise = new Promise<any>((resolve) => {
+      postResult
+      // On transforme en promesse
+        .toPromise()
+        .then(
+          response => {
+           console.log(response);
+            // On résout notre promesse
+            resolve(null);
+          }
+        )
+    });
+    return promise;
+  }
 
 
 

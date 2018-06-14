@@ -4,6 +4,7 @@ import {CategorieNode} from '../models/CategorieNode';
 import {CategorieBusinessService} from './categorie.service';
 import {CategorieFlatNode} from '../models/CategorieFlatNode';
 import {Observable, of as observableOf} from 'rxjs/index';
+import {CategoriedataService} from './data/categoriedata.service';
 
 /**
  * Service gérant les arbres. Il peut construire un arbre à partir d'un objet json strucuté.
@@ -48,7 +49,7 @@ export class ArbreService {
     flatNode.expandable = !!node.children;
     flatNode.nomCategorieModifie = flatNode.nomCategorie;
     flatNode.idParent = node.idParent;
-
+    flatNode.enableToolNode = false;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -80,7 +81,7 @@ export class ArbreService {
     return observableOf(node.children);
   };
 
-  constructor(public categorieBusiness: CategorieBusinessService) {
+  constructor(public categorieBusiness: CategorieBusinessService, public categoriedataBusiness: CategoriedataService) {
     this.initialize();
   }
 
@@ -151,6 +152,9 @@ export class ArbreService {
       }
     }
     if (nodeParent.children.length === 0 ) {
+      console.log('nodeParent'+nodeParent.nomCategorie);
+      console.log('node to delete'+nodeToDelete.nomCategorie);
+      console.log('children parent undefined set');
       nodeParent.children = undefined;
     }
     this.dataChange.next(this.data);
@@ -168,7 +172,7 @@ export class ArbreService {
       nodeToInsert.idParent = parent.id;
       const child = nodeToInsert;
       if ( parent.children === undefined) {
-        parent.children = [];
+        parent.children = new Array<CategorieNode>();
       }
       parent.children.push(child);
       this.dataChange.next(this.data);
@@ -187,6 +191,32 @@ export class ArbreService {
   updateCategorie(node: CategorieNode, nomCategorie: string) {
     node.nomCategorie = nomCategorie;
     this.dataChange.next(this.data);
+  }
+
+  /**
+   * Permet de vérifier si node contient nodeParent
+   * @param {CategorieNode} node la node qui est vérifié
+   * @param {CategorieNode} nodeParent la nodeParent qu'on cherche dans node
+   * @returns {boolean} vrai si elle le contient faux sinon
+   */
+  public nodeContain(node: CategorieNode, nodeParent: CategorieNode) {
+    if (node.children !== undefined) {
+      for (const index in node.children) {
+        console.log(node.children[index]);
+        if (node.children[index].id === nodeParent.id) {
+          console.log('return true');
+
+          return true;
+        }
+        if (node.children[index].children !== undefined && nodeParent !== undefined) {
+          const childNotContainNode =  !this.nodeContain(node.children[index], nodeParent);
+          if ( childNotContainNode === false) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
 }
