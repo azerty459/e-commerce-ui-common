@@ -23,7 +23,7 @@ export class ProduitBusiness {
     this.subject = new Subject<Pagination>();
 
   }
-
+  public searchedCategorie: number;
   public searchedText: string;
   public pageNumber: number;
   public nbProduits: number;
@@ -108,21 +108,23 @@ export class ProduitBusiness {
    * @param {number} page ne n° de page sur laquelle on est
    * @param {number} nombreDeProduit le nombre de produits à afficher sur la page
    * @param {string} text le texte recherché
+   * @param categorieId
    * @returns {Promise<Pagination>} une promesse de Pagination
    */
-  public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string): Promise<Pagination> {
+  public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string, categorieId: number): Promise<Pagination> {
 
     this.searchedText = text;
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
-      query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText +
-      '") { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'
+      query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText + '", categorie: ' + categorieId +
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'
     });
 
     const promise = new Promise<Pagination> ( (resolve, reject) => {
 
       postResult.toPromise().then(
         (response) => {
+          console.log(response);
           const pagination = response['pagination'];
           const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
           resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
@@ -136,11 +138,12 @@ export class ProduitBusiness {
   /**
    * Va chercher les données à afficher selon la recherche donnée en paramètre
    * @param {string} text le texte recherché
+   * @param idCategorie
    * @returns {Promise<void>}
    */
-  public async search(text: string) {
-
-    const resultat = await this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text);
+  public async search(text: string, idCategorie:number) {
+    const resultat = await this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text,idCategorie);
+    console.log(resultat);
     this.subject.next(resultat);
 
   }

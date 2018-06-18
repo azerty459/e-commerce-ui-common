@@ -285,6 +285,7 @@ export class CategorieBusinessService {
             response => {
               // On résout notre promesse et on renvoi l'objet json
               resolve(response);
+
             }
           )
           .catch(this.handleError);
@@ -304,7 +305,6 @@ export class CategorieBusinessService {
         .then(
           response =>{
             let retour;
-            console.log(response);
             if(response['updateCategorie'] == undefined){
               retour = response[0].message;
             }else{

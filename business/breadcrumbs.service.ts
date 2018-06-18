@@ -36,4 +36,7 @@ export class BreadcrumbsService {
 
     return cat;
   }
+  getBreadCumbForSearch(categorieSearched: String){
+
+  }
 }
