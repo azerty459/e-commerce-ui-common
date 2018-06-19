@@ -74,7 +74,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {url nom} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {url} } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -92,7 +92,7 @@ export class ProduitBusiness {
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
               );
               const arrayPhoto = produit.photos.map(
-                (photo) => new Photo(environment.api_rest_download_url + photo.url, photo.nom)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
               );
               resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
             }
@@ -250,7 +250,7 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            if (response['updateProduit'] == undefined) {
+            if (response['updateProduit'] === undefined) {
               resolve(response);
             } else {
               const produit = response['updateProduit'];
@@ -258,7 +258,7 @@ export class ProduitBusiness {
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
               );
               const arrayPhoto = produit.photos.map(
-                (photo) => new Photo(environment.api_rest_download_url + photo.url, photo.url)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
               );
               resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
             }
@@ -363,6 +363,7 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
+            // On résout notre promesse
             resolve(response);
           }
         )
@@ -371,7 +372,24 @@ export class ProduitBusiness {
     return promise;
   }
 
-
+  public removePhoto(photo: Photo): Promise<Produit> {
+    // On récupère l'objet Observable retourné par la requête post
+    const postResult = this.http.post(environment.api_url, {query: 'mutation{deletePhoto(id:' + photo.id + ') }'});
+    // On créer une promesse
+    const promise = new Promise<Produit>((resolve) => {
+      postResult
+      // On transforme en promesse
+        .toPromise()
+        .then(
+          response => {
+            // On résout notre promesse
+            resolve(response['deletePhoto']);
+          }
+        )
+        .catch(this.handleError);
+    });
+    return promise;
+  }
 }
 
 
