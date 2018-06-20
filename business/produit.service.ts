@@ -24,9 +24,11 @@ export class ProduitBusiness {
 
   }
   public searchedCategorie: number;
+  public searchedCategorieObject;
   public searchedText: string;
   public pageNumber: number;
   public nbProduits: number;
+  public searchDone = false;
   public subject: Subject<Pagination>;
 
 
@@ -132,7 +134,7 @@ export class ProduitBusiness {
         }
       );
     });
-
+    this.searchDone = true;
     return promise;
   }
 
