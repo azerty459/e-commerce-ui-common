@@ -100,14 +100,15 @@ export class ArbreService {
           this.sortNodes(categorie.children);
         }
     }
-    console.log(categorieNodes);
   }
 
   public sortArrayNode(categorieNodes: CategorieNode[]) {
     for (let ind01 = 0; ind01 < categorieNodes.length; ind01++) {
 
       for (let ind02 = ind01 + 1; ind02 < categorieNodes.length; ind02++) {
-        if ((categorieNodes[ind01] !== undefined && categorieNodes[ind02] !== undefined) && categorieNodes[ind01].nomCategorie[0] > categorieNodes[ind02].nomCategorie[0]) {
+        const nodeNotUndefined = categorieNodes[ind01] !== undefined && categorieNodes[ind02] !== undefined;
+        const nomCategorieNotUndefined = categorieNodes[ind01].nomCategorie[0] !== undefined && categorieNodes[ind02].nomCategorie[0] !== undefined;
+        if ( nodeNotUndefined && nomCategorieNotUndefined && categorieNodes[ind01].nomCategorie[0].toUpperCase() > categorieNodes[ind02].nomCategorie[0].toUpperCase()) {
           const temp = categorieNodes[ind01];
           categorieNodes[ind01] = categorieNodes[ind02];
           categorieNodes[ind02] = temp;
