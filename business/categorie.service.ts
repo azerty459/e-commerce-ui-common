@@ -195,9 +195,9 @@ export class CategorieBusinessService {
         .then(
           response =>{
             let retour;
-            if(response['addCategorieEnfant'] == undefined){
+            if(response['addCategorieEnfant'] === undefined){
               retour = response[0].message;
-            }else{
+            } else {
               const categorie = response['addCategorieEnfant'];
               retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             }

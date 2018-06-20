@@ -1,7 +1,15 @@
 
 export class Photo {
   constructor(
+    /**
+     * URL de la photo
+     */
+    public id: number,
     public url: string,
-    public urlSimplifie: string //Chemin de la photo relatif au dossier de stockage photo
+    /**
+     * Nom d'origine du fichier uploadé
+     */
+    public nom: string
   ) {}
+  public file;
 }

@@ -90,7 +90,33 @@ export class ArbreService {
    * @returns {CategorieNode[]}
    */
   get data(): CategorieNode[] {
+    this.sortNodes(this.dataChange.value);
     return this.dataChange.value;
+  }
+  public sortNodes(categorieNodes: CategorieNode[]) {
+    this.sortArrayNode(categorieNodes);
+    for (const categorie of categorieNodes) {
+        if (categorie !== undefined && categorie.children !== undefined) {
+          this.sortNodes(categorie.children);
+        }
+    }
+  }
+
+  public sortArrayNode(categorieNodes: CategorieNode[]) {
+    for (let ind01 = 0; ind01 < categorieNodes.length; ind01++) {
+
+      for (let ind02 = ind01 + 1; ind02 < categorieNodes.length; ind02++) {
+        const nodeNotUndefined = categorieNodes[ind01] !== undefined && categorieNodes[ind02] !== undefined;
+        const nomCategorieNotUndefined = categorieNodes[ind01].nomCategorie[0] !== undefined && categorieNodes[ind02].nomCategorie[0] !== undefined;
+        if ( nodeNotUndefined && nomCategorieNotUndefined && categorieNodes[ind01].nomCategorie[0].toUpperCase() > categorieNodes[ind02].nomCategorie[0].toUpperCase()) {
+          const temp = categorieNodes[ind01];
+          categorieNodes[ind01] = categorieNodes[ind02];
+          categorieNodes[ind02] = temp;
+          ind02 = ind02 + 1;
+        }
+      }
+
+    }
   }
 
   /**
@@ -105,6 +131,7 @@ export class ArbreService {
       const data = this.buildFileTree(dataObject.categories, 0);
       this.hasCategories = dataObject.categories.length !== 0;
       // Notifie le changement
+      this.sortNodes(data);
       this.dataChange.next(data);
 
     }
@@ -175,6 +202,7 @@ export class ArbreService {
         parent.children = new Array<CategorieNode>();
       }
       parent.children.push(child);
+      this.sortNodes(this.data);
       this.dataChange.next(this.data);
     }
     if (!this.hasCategories) {
