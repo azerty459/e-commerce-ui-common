@@ -13,7 +13,6 @@ import {Pagination} from "../models/Pagination";
 
 @Injectable()
 export class CategorieBusinessService {
-
   constructor(private http: HttpClient) { }
 
   /**

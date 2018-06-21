@@ -12,7 +12,7 @@ export class RoleService {
 
   constructor(private roleData: RoleDataService) {}
 
-  public async getAll(): Role[] {
+  public async getAll() {
     return await this.roleData.getRole();
   }
 }
