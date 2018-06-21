@@ -119,8 +119,10 @@ export class ProduitBusiness {
     this.searchedText = text;
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
+
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText + '", categorie: ' + categorieId +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} } } }'
+
     });
 
     const promise = new Promise<Pagination> ( (resolve, reject) => {
@@ -129,7 +131,8 @@ export class ProduitBusiness {
         (response) => {
           console.log(response);
           const pagination = response['pagination'];
-          const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
+          const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom,
+            produit.description, produit.prixHT, produit.arrayPhoto));
           resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
         }
       );
@@ -166,7 +169,7 @@ export class ProduitBusiness {
 
     const postResult = this.http.post(environment.api_url, {
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT } } }'
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } } } }'
     });
 
     // On créer une promesse
@@ -177,7 +180,19 @@ export class ProduitBusiness {
         .then(
           response => {
             const pagination = response['pagination'];
-            const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
+
+            const array = pagination.produits.map((produit) => {
+
+              const lesPhotos = produit.photos.map(
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+              );
+
+              // Ajout des photos du produit
+              const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+              prod.arrayPhoto = lesPhotos;
+
+              return prod;
+            } );
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
           }
         )
