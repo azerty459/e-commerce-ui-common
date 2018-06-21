@@ -9,11 +9,12 @@ import {Role} from "../models/Role";
 
 @Injectable()
 export class RoleService {
+  private roles: Role[] = [];
 
   constructor(private roleData: RoleDataService) {}
 
-  public async getAll(): Role[] {
-    return await this.roleData.getRole();
+  public getAll() {
+    return this.roleData.getRole();
   }
 }
 
