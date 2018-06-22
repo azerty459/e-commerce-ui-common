@@ -249,13 +249,6 @@ export class ProduitBusiness {
     }
 
     requete += '],' +
-      'photos: [';
-
-    for( let photo of produit.arrayPhoto) {
-      requete += '{ url: "' + photo.url + '"},';
-    }
-
-    requete += '],' +
       '})' +
       '{ref nom description prixHT categories{id nom} photos {url} }' +
       '}';
