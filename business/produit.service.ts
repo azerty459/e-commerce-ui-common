@@ -76,7 +76,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -94,7 +94,7 @@ export class ProduitBusiness {
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
               );
               const arrayPhoto = produit.photos.map(
-                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
             }
