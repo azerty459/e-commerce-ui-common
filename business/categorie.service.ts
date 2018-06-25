@@ -6,8 +6,6 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
 import {Pagination} from "../models/Pagination";
-import {Produit} from "../models/Produit";
-import {promise} from "selenium-webdriver";
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -15,7 +13,6 @@ import {promise} from "selenium-webdriver";
 
 @Injectable()
 export class CategorieBusinessService {
-
   constructor(private http: HttpClient) { }
 
   /**
@@ -197,9 +194,9 @@ export class CategorieBusinessService {
         .then(
           response =>{
             let retour;
-            if(response['addCategorieEnfant'] == undefined){
+            if(response['addCategorieEnfant'] === undefined){
               retour = response[0].message;
-            }else{
+            } else {
               const categorie = response['addCategorieEnfant'];
               retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             }
@@ -252,19 +249,19 @@ export class CategorieBusinessService {
           response => {
             // On résout notre promesse
             console.log(response);
-            if(response['categories']!=0){
+            if (response['categories'].length !== 0) {
               resolve(response['categories'][0]['profondeur']);
-            }else {
+            } else {
               // Pas de categorie*
-              console.log("pas de categorie");
-              resolve(null);
+              console.log('pas de categorie');
+              resolve([]);
             }
           }
         )
         .catch(this.handleError);
     });
-    let profondeur = await promise;
-    if (profondeur != null && profondeur != undefined) {
+    const profondeur = await promise;
+    if (profondeur != null && profondeur !== undefined) {
 
       //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
       //  profondeur.
@@ -287,6 +284,7 @@ export class CategorieBusinessService {
             response => {
               // On résout notre promesse et on renvoi l'objet json
               resolve(response);
+
             }
           )
           .catch(this.handleError);
@@ -306,7 +304,6 @@ export class CategorieBusinessService {
         .then(
           response =>{
             let retour;
-            console.log(response);
             if(response['updateCategorie'] == undefined){
               retour = response[0].message;
             }else{

@@ -4,6 +4,7 @@ import {CategorieNode} from '../models/CategorieNode';
 import {CategorieBusinessService} from './categorie.service';
 import {CategorieFlatNode} from '../models/CategorieFlatNode';
 import {Observable, of as observableOf} from 'rxjs/index';
+import {CategoriedataService} from './data/categoriedata.service';
 
 /**
  * Service gérant les arbres. Il peut construire un arbre à partir d'un objet json strucuté.
@@ -48,7 +49,7 @@ export class ArbreService {
     flatNode.expandable = !!node.children;
     flatNode.nomCategorieModifie = flatNode.nomCategorie;
     flatNode.idParent = node.idParent;
-
+    flatNode.enableToolNode = false;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -80,12 +81,42 @@ export class ArbreService {
     return observableOf(node.children);
   };
 
-  constructor(public categorieBusiness: CategorieBusinessService) {
+  constructor(public categorieBusiness: CategorieBusinessService, public categoriedataBusiness: CategoriedataService) {
     this.initialize();
   }
 
+  /**
+   * Permet d'obtenir les données de l'arbre
+   * @returns {CategorieNode[]}
+   */
   get data(): CategorieNode[] {
+    this.sortNodes(this.dataChange.value);
     return this.dataChange.value;
+  }
+  public sortNodes(categorieNodes: CategorieNode[]) {
+    this.sortArrayNode(categorieNodes);
+    for (const categorie of categorieNodes) {
+        if (categorie !== undefined && categorie.children !== undefined) {
+          this.sortNodes(categorie.children);
+        }
+    }
+  }
+
+  public sortArrayNode(categorieNodes: CategorieNode[]) {
+    for (let ind01 = 0; ind01 < categorieNodes.length; ind01++) {
+
+      for (let ind02 = ind01 + 1; ind02 < categorieNodes.length; ind02++) {
+        const nodeNotUndefined = categorieNodes[ind01] !== undefined && categorieNodes[ind02] !== undefined;
+        const nomCategorieNotUndefined = categorieNodes[ind01].nomCategorie[0] !== undefined && categorieNodes[ind02].nomCategorie[0] !== undefined;
+        if ( nodeNotUndefined && nomCategorieNotUndefined && categorieNodes[ind01].nomCategorie[0].toUpperCase() > categorieNodes[ind02].nomCategorie[0].toUpperCase()) {
+          const temp = categorieNodes[ind01];
+          categorieNodes[ind01] = categorieNodes[ind02];
+          categorieNodes[ind02] = temp;
+          ind02 = ind02 + 1;
+        }
+      }
+
+    }
   }
 
   /**
@@ -98,14 +129,13 @@ export class ArbreService {
       // Construit l'arbre composé de node à partir de l'objet Json. Le resulat est une liste de 'CategorieNode' avec
       // des file node imbriqué en tant qu'enfant
       const data = this.buildFileTree(dataObject.categories, 0);
+      this.hasCategories = dataObject.categories.length !== 0;
       // Notifie le changement
+      this.sortNodes(data);
       this.dataChange.next(data);
-      this.hasCategories = true;
-    } else {
-      this.hasCategories = false;
-    }
 
     }
+  }
   /**
    * Permet de construire la structure de l'arbre
    * @param value objet Json
@@ -149,10 +179,72 @@ export class ArbreService {
       }
     }
     if (nodeParent.children.length === 0 ) {
+      console.log('nodeParent'+nodeParent.nomCategorie);
+      console.log('node to delete'+nodeToDelete.nomCategorie);
+      console.log('children parent undefined set');
       nodeParent.children = undefined;
     }
     this.dataChange.next(this.data);
   }
+  /** Ajoute une nouvelle categorie vide à l'arbre
+   * @param {CategorieNode} parent le parent de la catégorie à inserer
+   * @param {string} nodeToInsert la node a inserer
+   */
+  insertItem(parent: CategorieNode, nodeToInsert: CategorieNode) {
+    // un parent null signifie qu'on souhaite une categorie de level 0
+    if (parent === null ) {
+      this.data.push(nodeToInsert);
+      this.dataChange.next(this.data);
+    } else {
+      nodeToInsert.idParent = parent.id;
+      const child = nodeToInsert;
+      if ( parent.children === undefined) {
+        parent.children = new Array<CategorieNode>();
+      }
+      parent.children.push(child);
+      this.sortNodes(this.data);
+      this.dataChange.next(this.data);
+    }
+    if (!this.hasCategories) {
+      this.hasCategories = true;
+    }
 
+  }
+
+  /**
+   * Met a jour une categorie de l'arbre
+   * @param {CategorieNode} node a mettre a jour
+   * @param {string} nomCategorie nom de la categorie a associer
+   */
+  updateCategorie(node: CategorieNode, nomCategorie: string) {
+    node.nomCategorie = nomCategorie;
+    this.dataChange.next(this.data);
+  }
+
+  /**
+   * Permet de vérifier si node contient nodeParent
+   * @param {CategorieNode} node la node qui est vérifié
+   * @param {CategorieNode} nodeParent la nodeParent qu'on cherche dans node
+   * @returns {boolean} vrai si elle le contient faux sinon
+   */
+  public nodeContain(node: CategorieNode, nodeParent: CategorieNode) {
+    if (node.children !== undefined) {
+      for (const index in node.children) {
+        console.log(node.children[index]);
+        if (node.children[index].id === nodeParent.id) {
+          console.log('return true');
+
+          return true;
+        }
+        if (node.children[index].children !== undefined && nodeParent !== undefined) {
+          const childNotContainNode =  !this.nodeContain(node.children[index], nodeParent);
+          if ( childNotContainNode === false) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
 
 }
