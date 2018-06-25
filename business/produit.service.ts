@@ -250,7 +250,7 @@ export class ProduitBusiness {
 
     requete += '],' +
       '})' +
-      '{ref nom description prixHT categories{id nom} photos {url} }' +
+      '{ref nom description prixHT categories{id nom} photos {id url} }' +
       '}';
     console.log(requete);
     const postResult = this.http.post(environment.api_url, {
