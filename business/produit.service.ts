@@ -149,7 +149,7 @@ export class ProduitBusiness {
    */
   public async search(text: string, idCategorie:number) {
     const resultat = await this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text,idCategorie);
-    console.log(resultat);
+
     this.subject.next(resultat);
 
   }
