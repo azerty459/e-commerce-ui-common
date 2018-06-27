@@ -7,7 +7,7 @@ import { environment } from '../../../src/environments/environment';
   providedIn: 'root'
 })
 export class CategoriedataService {
-
+  public idLastDeletedCategorie: number;
   constructor(private http: HttpClient) { }
 
 
@@ -65,6 +65,32 @@ export class CategoriedataService {
     return promise;
   }
 
-
+  /**
+   * Methode permettant l'envoi de la requéte afin de restaurer la dernière catégorie supprimée
+   * @returns {Promise<any>} true si succès false si echec
+   */
+  public restoreLastDeletedCategorie(): Promise<number> {
+    if (this.idLastDeletedCategorie === undefined){
+      this.idLastDeletedCategorie = 0;
+    }
+    // On récupère l'objet Observable retourné par la requête post
+    const postResult = this.http.post(environment.api_url, {
+      query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + ')}'
+    });
+    // On créer une promesse
+    const promise = new Promise<any>((resolve) => {
+      postResult
+      // On transforme en promesse
+        .toPromise()
+        .then(
+          response => {
+            console.log(response);
+            // On résout notre promesse
+            resolve(response);
+          }
+        )
+    });
+    return promise;
+  }
 
 }
