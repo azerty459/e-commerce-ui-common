@@ -25,7 +25,6 @@ export class RetourComponent implements OnInit {
 
 
   goBack(): void {
-    console.log("go back : url precedente" + this.urlPrecedente)
     if(this.urlPrecedente !== '/'){
       this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl()+';back=1');
     }
