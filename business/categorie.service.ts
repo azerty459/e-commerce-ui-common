@@ -6,6 +6,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
 import {Pagination} from "../models/Pagination";
+import {AuthDataService} from "./data/auth-data.service";
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -13,7 +14,9 @@ import {Pagination} from "../models/Pagination";
 
 @Injectable()
 export class CategorieBusinessService {
-  constructor(private http: HttpClient) { }
+  constructor(
+    private authData: AuthDataService,
+    private http: HttpClient) { }
 
   /**
    * Retourne une erreur si le business n'a pas pu exécuter le post
@@ -240,7 +243,7 @@ export class CategorieBusinessService {
   public async getTree(): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post qui permet d'obtenir la profondeur de l'arbre
     // formé par les categories
-    const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'})
+    const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'});
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise

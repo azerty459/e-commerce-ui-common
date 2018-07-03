@@ -30,7 +30,7 @@ export class CategoriedataService {
 
          // Tri des catégories pour trouver celle entrée en paramètre
         response['categories'].forEach((c) => {
-          if(c.id === cat.id) {
+          if (c.id === cat.id) {
             resultcat = c;
           }
         });
