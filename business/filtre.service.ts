@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import {Categorie} from "../models/Categorie";
 
 @Injectable()
 export class FiltreService {
   private DEFAULT_PRODUIT_PAR_PAGE = 5;
   public pageAffiche:number;
-  public categorieForBreadCrum;
+  public categorieForBreadCrum : Categorie = null;
   public produits;
-  public lengthProduit;
-  public pageActuelURL;
-  public pageMax;
   constructor() {
   }
   public saveNbProduitParPage(produitParPage: number){
@@ -25,9 +23,7 @@ export class FiltreService {
   }
   public setFiltres(produits,lengthProduit,pageActuelURL,pageMax){
     this.produits = produits;
-    this.lengthProduit = lengthProduit;
-    this.pageActuelURL = pageActuelURL;
-    this.pageMax = pageMax;
+
   }
 
 }

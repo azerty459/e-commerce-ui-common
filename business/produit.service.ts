@@ -8,6 +8,9 @@ import {Categorie} from '../models/Categorie';
 import {Photo} from '../models/Photo';
 import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/observable/of';
+import {PaginationDataService} from "./data/pagination-data.service";
+import {FiltreService} from "./filtre.service";
+import {ProduiDataService} from "./data/produitData.service";
 
 
 
@@ -17,7 +20,7 @@ import 'rxjs/add/observable/of';
 
 @Injectable()
 export class ProduitBusiness {
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private paginationDataService: PaginationDataService,private filtreService: FiltreService,private produitDataService: ProduiDataService) {
 
     // Observable mettant à jour l'observable donnant la liste des produits
     this.subject = new Subject<Pagination>();
@@ -115,8 +118,12 @@ export class ProduitBusiness {
    * @returns {Promise<Pagination>} une promesse de Pagination
    */
   public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string, categorieId: number): Promise<Pagination> {
+    if(text != undefined && text !=null){
+      this.searchedText = text;
+    }else {
+      this.searchedText = "";
+    }
 
-    this.searchedText = text;
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
 
@@ -148,13 +155,31 @@ export class ProduitBusiness {
    * @returns {Promise<void>}
    */
   public async search(text: string, idCategorie:number) {
-    const resultat = await this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text,idCategorie);
-
-    this.subject.next(resultat);
+    const result = await this.getProduitByPaginationSearch(this.pageNumber, this.filtreService.getNbProduitParPage(), text, idCategorie);
+    this.produitDataService.produits.arrayProduit = result.tableau;
+    this.produitDataService.produits.length = result.total;
+    this.paginationDataService.paginationProduit.pageActuelle = result.pageActuelle;
+    this.paginationDataService.paginationProduit.pageMax = result.pageMax;
+    this.paginationDataService.paginationProduit.total = result.total;
+    this.paginationDataService.paginationProduit.tableau = result.tableau;
+    this.paginationDataService.paginationProduit.pageMin = result.pageMin;
+    // On est dans le cadre d'une recherche (sauf si la chaîne recherchée est de longueur 0)
+    if (this.searchedText.length === 0) {
+      console.log('pas de recherche texte vide');
+    }
+    // pour le fil d'arianne
+    this.getSearchedCategorie();
+  }
+  public  getSearchedCategorie() {
+    const categorieNode = this.searchedCategorieObject;
+    // 0 équivaut aucune catégorie existante
+    if(categorieNode && categorieNode.id !== 0){
+      this.filtreService.categorieForBreadCrum  = new Categorie(categorieNode.id,categorieNode.nomCategorie,undefined,undefined);
+    } else {
+      this.filtreService.categorieForBreadCrum = null;
+    }
 
   }
-
-
   /**
    * Retourne une page paginée selon les paramètres voulus.
    * @param {number} page La page souhaitant être affichée

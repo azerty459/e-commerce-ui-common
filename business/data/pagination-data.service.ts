@@ -15,7 +15,10 @@ import {Role} from "../../models/Role";
 @Injectable({providedIn: 'root'})
 export class PaginationDataService {
 
+  public paginationProduit:Pagination;
+
   constructor(private http: HttpClient) {
+    this.paginationProduit = new Pagination(0,0,0,0,[]);
   }
 
   /**
