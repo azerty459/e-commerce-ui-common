@@ -3,8 +3,9 @@ import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
 import {AuthDataService} from '../business/data/auth-data.service';
-import {Observable} from "rxjs/Observable";
-
+import {throwError} from 'rxjs/internal/observable/throwError';
+import 'rxjs/add/operator/catch';
+import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
@@ -23,8 +24,12 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     // Clone the request and set the new header in one step.
     const authReq = req.clone({ setHeaders: { Authorization: authToken } });
-
-    // send cloned request with header to the next handler.
-    return next.handle(authReq);
+    return next.handle(authReq)
+      .catch((error, caught) => {
+        console.log('une erreur est survenue');
+        console.log(error);
+        this.auth.logout();
+        return throwError(error);
+      }) as any;
   }
 }
