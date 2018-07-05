@@ -98,9 +98,9 @@ export class ArbreService {
   public sortNodes(categorieNodes: CategorieNode[]) {
     this.sortArrayNode(categorieNodes);
     for (const categorie of categorieNodes) {
-        if (categorie !== undefined && categorie.children !== undefined) {
-          this.sortNodes(categorie.children);
-        }
+      if (categorie !== undefined && categorie.children !== undefined) {
+        this.sortNodes(categorie.children);
+      }
     }
   }
 
@@ -249,9 +249,9 @@ export class ArbreService {
    * Methode permettant la restauration de la dernière node supprimé
    */
   public  async restoreLastDeletedNode() {
-    const response: any = await this.categoriedataBusiness.restoreLastDeletedCategorie().valueOf();
-    this.lastDeletedNode.id = response.restoreCategorie;
-    this.insertItem(this.lastDeletedParentnode, this.lastDeletedNode);
+    const response = await this.categoriedataBusiness.restoreLastDeletedCategorie();
+    console.log(this.lastDeletedParentnode);
+    this.insertItem(this.lastDeletedParentnode, this.buildFileTree(response.categories, 0)[0]);
   }
-
 }
+
