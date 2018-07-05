@@ -137,11 +137,21 @@ export class ProduitBusiness {
     const promise = new Promise<Pagination> ( (resolve, reject) => {
 
       postResult.toPromise().then(
-        (response) => {
-          console.log(response);
+        response => {
           const pagination = response['pagination'];
-          const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom,
-            produit.description, produit.prixHT, produit.arrayPhoto));
+
+          const array = pagination.produits.map((produit) => {
+
+            const lesPhotos = produit.photos.map(
+              (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+            );
+
+            // Ajout des photos du produit
+            const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+            prod.arrayPhoto = lesPhotos;
+
+            return prod;
+          } );
           resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
         }
       );
