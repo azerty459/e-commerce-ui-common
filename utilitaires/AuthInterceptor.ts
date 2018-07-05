@@ -2,7 +2,7 @@
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
-import {AuthDataService} from '../business/data/auth-data.service';
+import {AuthDataService} from '../../src/business/auth-data.service';
 import {throwError} from 'rxjs/internal/observable/throwError';
 import 'rxjs/add/operator/catch';
 import {Observable} from 'rxjs/Observable';
