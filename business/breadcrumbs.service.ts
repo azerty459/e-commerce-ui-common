@@ -6,7 +6,7 @@ import {Categorie} from '../models/Categorie';
   providedIn: 'root'
 })
 export class BreadcrumbsService {
-
+  public allCategories;
   constructor() { }
 
   /**
