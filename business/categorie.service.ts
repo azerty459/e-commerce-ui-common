@@ -6,7 +6,6 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { Categorie } from '../models/Categorie';
 import { environment } from '../../src/environments/environment';
 import {Pagination} from "../models/Pagination";
-import {AuthDataService} from "../../src/business/auth-data.service";
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -15,7 +14,6 @@ import {AuthDataService} from "../../src/business/auth-data.service";
 @Injectable()
 export class CategorieBusinessService {
   constructor(
-    private authData: AuthDataService,
     private http: HttpClient) { }
 
   /**
