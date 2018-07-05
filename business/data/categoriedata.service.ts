@@ -19,7 +19,7 @@ export class CategoriedataService {
    * @param {Categorie} cat la catégorie dont on cherche le chemin
    * @returns {Promise<any>} Une promesse de la catégorie avec le chemin renseigné
    */
-  public getChemin(cat: Categorie): Promise<any> {
+  public getChemin(): Promise<any> {
 
     // Récupérer toutes les catégories
     const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin } }'});
@@ -28,16 +28,7 @@ export class CategoriedataService {
     const promise = new Promise<any>( (resolve, reject) => {
 
       postResult.toPromise().then( (response) => {
-
-         let resultcat = null;
-
-         // Tri des catégories pour trouver celle entrée en paramètre
-        response['categories'].forEach((c) => {
-          if(c.id === cat.id) {
-            resultcat = c;
-          }
-        });
-        resolve(resultcat);
+        resolve(response['categories']);
         }
       );
     });

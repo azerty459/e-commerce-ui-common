@@ -123,7 +123,9 @@ export class ProduitBusiness {
     }else {
       this.searchedText = "";
     }
-
+    if(page === undefined){
+      page = 1;
+    }
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
 
