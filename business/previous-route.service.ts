@@ -6,7 +6,7 @@ export class PreviousRouteBusiness {
 
   private previousUrl: string;
   private currentUrl: string;
-
+  public retour: boolean = false;
   constructor(private router: Router) {
     this.currentUrl = this.router.url;
     router.events.subscribe(event => {
