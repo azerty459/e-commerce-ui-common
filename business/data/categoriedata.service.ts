@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Categorie} from '../../models/Categorie';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { environment } from '../../../src/environments/environment';
+import {throwError as observableThrowError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,10 @@ import { environment } from '../../../src/environments/environment';
 export class CategoriedataService {
   public idLastDeletedCategorie: number;
   constructor(private http: HttpClient) { }
+  private handleError (error: HttpErrorResponse | any) {
+    console.error('Categorie Business::handleError', error);
+    return observableThrowError(error);
+  }
 
 
   /**
@@ -60,28 +65,66 @@ export class CategoriedataService {
    * Methode permettant l'envoi de la requéte afin de restaurer la dernière catégorie supprimée
    * @returns {Promise<any>} true si succès false si echec
    */
-  public restoreLastDeletedCategorie(): Promise<number> {
+  public async restoreLastDeletedCategorie(): Promise<any> {
     if (this.idLastDeletedCategorie === undefined){
       this.idLastDeletedCategorie = 0;
     }
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {
-      query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + ')}'
+      query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + '){id profondeur}}'
     });
-    // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
-      // On transforme en promesse
+      // On transforme en promise
         .toPromise()
         .then(
           response => {
-            console.log(response);
             // On résout notre promesse
-            resolve(response);
+            if (response['restoreCategorie'].length !== 0) {
+              resolve(response['restoreCategorie'][0]);
+            } else {
+              // Pas de categorie
+              console.log('pas de categorie');
+              resolve([]);
+            }
           }
         )
+        .catch(this.handleError);
     });
-    return promise;
+    const response = await promise;
+    const profondeur = response.profondeur;
+    const id = response.id;
+    if (profondeur != null && profondeur !== undefined) {
+
+      //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
+      //  profondeur.
+      let query = '{ categories(id:' + id + ') { nom id ';
+      for (let i = 0; i < profondeur; i++) {
+        query += 'sousCategories{ nom id ';
+      }
+      for (let i = 0; i < profondeur; i++) {
+        query += '}';
+      }
+      query += '}}';
+
+      // On execute cette requete
+      const postResult = this.http.post(environment.api_url, {query: query});
+      let promise = new Promise<any>((resolve) => {
+        postResult
+        // On transforme en promise
+          .toPromise()
+          .then(
+            response => {
+              // On résout notre promesse et on renvoi l'objet json
+              resolve(response);
+            }
+          )
+          .catch(this.handleError);
+      });
+      return promise;
+    }
   }
+
+
 
 }
