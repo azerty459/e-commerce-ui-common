@@ -176,6 +176,7 @@ export class ProduitBusiness {
     const categorieNode = this.searchedCategorieObject;
     // 0 équivaut aucune catégorie existante
     if(categorieNode && categorieNode.id !== 0){
+
       this.filtreService.categorieForBreadCrum  = new Categorie(categorieNode.id,categorieNode.nomCategorie,undefined,undefined);
     } else {
       this.filtreService.categorieForBreadCrum = null;

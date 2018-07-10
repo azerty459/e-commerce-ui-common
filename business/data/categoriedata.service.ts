@@ -30,7 +30,12 @@ export class CategoriedataService {
     const promise = new Promise<any>( (resolve, reject) => {
 
       postResult.toPromise().then( (response) => {
-        resolve(response['categories']);
+        const categories = response['categories'];
+        // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
+        if (categories !== undefined) {
+          // On résout notre promesse
+          resolve(categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
+        }
         }
       );
     });

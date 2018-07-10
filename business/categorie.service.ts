@@ -41,11 +41,9 @@ export class CategorieBusinessService {
         .then(
           response => {
             const categories = response['categories'];
-            console.log(categories);
             // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
             if (categories !== undefined) {
               // On résout notre promesse
-              console.log(categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
               resolve(categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
             }
           }
