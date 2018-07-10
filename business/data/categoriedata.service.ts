@@ -24,7 +24,7 @@ export class CategoriedataService {
   public getChemin(): Promise<any> {
 
     // Récupérer toutes les catégories
-    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin } }'});
+    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin{id nom level} } }'});
 
     // fabrication de la promesse
     const promise = new Promise<any>( (resolve, reject) => {
