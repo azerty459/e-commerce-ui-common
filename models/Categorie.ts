@@ -4,7 +4,7 @@ export class Categorie {
     public id: number,
     public nomCat: string,
     public level: number,
-    public chemin: string
+    public chemin: [Categorie],
   ) {}
 
   /**
