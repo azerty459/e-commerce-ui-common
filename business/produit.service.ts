@@ -79,7 +79,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -93,13 +93,17 @@ export class ProduitBusiness {
               resolve(response[0].message);
             } else {
               const produit = response['produits'][0];
+              console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
               );
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
+              const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
+              resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              console.log(resolvedProduct);
+              resolve(resolvedProduct);
             }
           }
         )
@@ -275,10 +279,13 @@ export class ProduitBusiness {
     for( let categorie of produit.arrayCategorie) {
       requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
     }
-
-    requete += '],' +
+    requete += '],';
+    if (produit.photoPrincipale.id !== 0) {
+      requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
+    }
+    requete +=
       '})' +
-      '{ref nom description prixHT categories{id nom} photos {id url} }' +
+      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} }' +
       '}';
     console.log(requete);
     const postResult = this.http.post(environment.api_url, {
@@ -295,13 +302,17 @@ export class ProduitBusiness {
               resolve(response);
             } else {
               const produit = response['updateProduit'];
+              console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
               );
               const arrayPhoto = produit.photos.map(
-                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
+              const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
+              resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              console.log(resolvedProduct);
+              resolve(resolvedProduct);
             }
           }
         )
