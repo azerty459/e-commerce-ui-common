@@ -29,7 +29,6 @@ export class ProduitBusiness {
   public searchedCategorie: number;
   public searchedCategorieObject;
   public searchedText: string;
-  public pageNumber: number;
   public nbProduits: number;
   public searchDone = false;
   public subject: Subject<Pagination>;
@@ -157,7 +156,7 @@ export class ProduitBusiness {
    * @returns {Promise<void>}
    */
   public async search(text: string, idCategorie:number) {
-    const result = await this.getProduitByPaginationSearch(this.pageNumber, this.filtreService.getNbProduitParPage(), text, idCategorie);
+    const result = await this.getProduitByPaginationSearch(this.paginationDataService.paginationProduit.pageActuelle, this.filtreService.getNbProduitParPage(), text, idCategorie);
     this.produitDataService.produits.arrayProduit = result.tableau;
     this.produitDataService.produits.length = result.total;
     this.paginationDataService.paginationProduit.pageActuelle = result.pageActuelle;
@@ -192,7 +191,6 @@ export class ProduitBusiness {
   public getProduitByPagination(page: number, nombreDeProduit: number): Promise<Pagination> {
 
     // Stockage des valeurs de la pagination
-    this.pageNumber = page;
     this.nbProduits = nombreDeProduit;
 
     const postResult = this.http.post(environment.api_url, {
