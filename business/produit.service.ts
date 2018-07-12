@@ -280,6 +280,7 @@ export class ProduitBusiness {
       requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
     }
     requete += '],';
+    console.log(produit.photoPrincipale);
     if (produit.photoPrincipale.id !== 0) {
       requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
     }
@@ -287,7 +288,6 @@ export class ProduitBusiness {
       '})' +
       '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} }' +
       '}';
-    console.log(requete);
     const postResult = this.http.post(environment.api_url, {
       query: requete
     });
