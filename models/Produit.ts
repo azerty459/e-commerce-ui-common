@@ -7,7 +7,8 @@ export class Produit {
     public description: string,
     public prixHT: number,
     public arrayCategorie = new Array<Categorie>(),
-    public arrayPhoto = new Array<Photo>()
+    public arrayPhoto = new Array<Photo>(),
+    public photoPrincipale = new Photo(0, '', '')
   ) {}
 
 }
