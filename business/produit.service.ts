@@ -29,7 +29,6 @@ export class ProduitBusiness {
   public searchedCategorie: number;
   public searchedCategorieObject;
   public searchedText: string;
-  public pageNumber: number;
   public nbProduits: number;
   public searchDone = false;
   public subject: Subject<Pagination>;
@@ -134,7 +133,7 @@ export class ProduitBusiness {
     const postResult = this.http.post<Pagination>(environment.api_url, {
 
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText + '", categorie: ' + categorieId +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} } } }'
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} photoPrincipale{id url nom} } } }'
 
     });
 
@@ -144,8 +143,13 @@ export class ProduitBusiness {
         (response) => {
           console.log(response);
           const pagination = response['pagination'];
-          const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom,
-            produit.description, produit.prixHT, produit.arrayPhoto));
+          const array = [];
+          pagination.produits.map((produit) => {
+            const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.arrayPhoto)
+            prod.photoPrincipale = new Photo(produit.photoPrincipale.id,produit.photoPrincipale.url,produit.photoPrincipale.nom)
+            array.push(prod);
+          });
+          console.log(array);
           resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
         }
       );
@@ -161,7 +165,7 @@ export class ProduitBusiness {
    * @returns {Promise<void>}
    */
   public async search(text: string, idCategorie:number) {
-    const result = await this.getProduitByPaginationSearch(this.pageNumber, this.filtreService.getNbProduitParPage(), text, idCategorie);
+    const result = await this.getProduitByPaginationSearch(this.paginationDataService.paginationProduit.pageActuelle, this.filtreService.getNbProduitParPage(), text, idCategorie);
     this.produitDataService.produits.arrayProduit = result.tableau;
     this.produitDataService.produits.length = result.total;
     this.paginationDataService.paginationProduit.pageActuelle = result.pageActuelle;
@@ -196,12 +200,11 @@ export class ProduitBusiness {
   public getProduitByPagination(page: number, nombreDeProduit: number): Promise<Pagination> {
 
     // Stockage des valeurs de la pagination
-    this.pageNumber = page;
     this.nbProduits = nombreDeProduit;
 
     const postResult = this.http.post(environment.api_url, {
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } } } }'
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } photoPrincipale{id url nom} } } }'
     });
 
     // On créer une promesse
@@ -216,11 +219,12 @@ export class ProduitBusiness {
             const array = pagination.produits.map((produit) => {
 
               const lesPhotos = produit.photos.map(
-                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
 
               // Ajout des photos du produit
               const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+              prod.photoPrincipale = produit.photoPrincipale;
               prod.arrayPhoto = lesPhotos;
 
               return prod;
@@ -310,7 +314,7 @@ export class ProduitBusiness {
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
-              resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
               console.log(resolvedProduct);
               resolve(resolvedProduct);
             }
