@@ -1,5 +1,6 @@
 import {Categorie} from "./Categorie";
 import {Photo} from "./Photo";
+import {Avis} from "./Avis";
 export class Produit {
   constructor(
     public ref: string,
@@ -10,5 +11,5 @@ export class Produit {
     public arrayPhoto = new Array<Photo>(),
     public photoPrincipale = new Photo(0, '', '')
   ) {}
-
+  public avis: [Avis];
 }
