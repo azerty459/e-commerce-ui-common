@@ -11,10 +11,10 @@ export class FiltreService {
   constructor() {
   }
   public saveNbProduitParPage(produitParPage: number){
-    sessionStorage.setItem("filtreNbProduitParPage", ""+produitParPage)
+    localStorage.setItem("filtreNbProduitParPage", ""+produitParPage)
   }
   public getNbProduitParPage(){
-    const produitParPage = sessionStorage.getItem("filtreNbProduitParPage");
+    const produitParPage = localStorage.getItem("filtreNbProduitParPage");
     if (produitParPage === undefined || produitParPage === null){
       return this.DEFAULT_PRODUIT_PAR_PAGE;
     }else {
