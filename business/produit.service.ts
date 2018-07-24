@@ -95,13 +95,16 @@ export class ProduitBusiness {
               console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
-              );
+              )
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
-              resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              console.log(resolvedProduct);
+              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+                resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              }else{
+                resolvedProduct.photoPrincipale = new Photo(0, "", "");
+              }
               resolve(resolvedProduct);
             }
           }
@@ -145,8 +148,12 @@ export class ProduitBusiness {
           const pagination = response['pagination'];
           const array = [];
           pagination.produits.map((produit) => {
-            const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.arrayPhoto)
-            prod.photoPrincipale = new Photo(produit.photoPrincipale.id,produit.photoPrincipale.url,produit.photoPrincipale.nom)
+            const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.arrayPhoto);
+            if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+              prod.photoPrincipale = new Photo(produit.photoPrincipale.id,  produit.photoPrincipale.url, produit.photoPrincipale.nom);
+            }else{
+              prod.photoPrincipale = new Photo(0, "", "");
+            }
             array.push(prod);
           });
           console.log(array);
@@ -222,9 +229,13 @@ export class ProduitBusiness {
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
 
+
               // Ajout des photos du produit
               const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
-              prod.photoPrincipale = produit.photoPrincipale;
+              if(produit.photoPrincipale != undefined && produit.photoPrincipale){
+                prod.photoPrincipale = produit.photoPrincipale;
+              }
+
               prod.arrayPhoto = lesPhotos;
 
               return prod;
@@ -285,7 +296,7 @@ export class ProduitBusiness {
     }
     requete += '],';
     console.log(produit.photoPrincipale);
-    if (produit.photoPrincipale.id !== 0) {
+    if (produit.photoPrincipale !== undefined && produit.photoPrincipale.id !== 0) {
       requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
     }
     requete +=
@@ -314,8 +325,11 @@ export class ProduitBusiness {
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
-              resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              console.log(resolvedProduct);
+              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+                resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              }else{
+                resolvedProduct.photoPrincipale = new Photo(0, "", "");
+              }
               resolve(resolvedProduct);
             }
           }
