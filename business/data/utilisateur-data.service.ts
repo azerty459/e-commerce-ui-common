@@ -44,12 +44,15 @@ export class UtilisateurDataService {
             if (response['utilisateurs'] === undefined) {
               resolve(response[0].message);
             } else {
-              const utilisateur = response['utilisateurs'][0];
+              console.log(response);
+              const utilisateur = response['utilisateurs'];
               const arrayRole = utilisateur.roles.map(
                 (role) => new Role(role.id, role.nom)
               );
-              resolve(new Utilisateur(utilisateur.id, utilisateur.email, utilisateur.prenom, utilisateur.nom,
-                '', arrayRole));
+              const user = new Utilisateur(utilisateur.id, utilisateur.email, utilisateur.prenom, utilisateur.nom,
+                '');
+              user.role = new Role(0,"");
+              resolve(user);
             }
           }
         )
@@ -76,13 +79,7 @@ export class UtilisateurDataService {
     let requete = 'mutation{addUtilisateur(utilisateur: { ' +
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
-      'roles:[ ';
-
-    for ( const role of utilisateur.roles) {
-      requete += '{ nom: "' + role.nom + '"},';
-    }
-    requete += '],';
-    requete += '})' +
+      'roles: {nom:"'+ utilisateur.role.nom +'"}})'+
       '{nom prenom email roles{id nom} }' +
       '}';
     console.log(requete);
@@ -102,8 +99,10 @@ export class UtilisateurDataService {
               const arrayRole = retourUtilisateur.roles.map(
                 (role) => new Role(role.id, role.nom)
               );
-              resolve(new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom, retourUtilisateur.nom,
-                retourUtilisateur.mdp, arrayRole));
+              const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
+                retourUtilisateur.nom, retourUtilisateur.mdp);
+              user.role = new Role(0,"");
+              resolve(user);
             }
           }
         )
@@ -120,14 +119,9 @@ export class UtilisateurDataService {
       'mdp: "' + utilisateur.mdp + '", ' +
       'prenom: "' + utilisateur.prenom + '", ' +
       'nom: "' + utilisateur.nom + '", ' +
-      'roles:[ ';
-
-    for ( const role of utilisateur.roles) {
-      requete += '{ nom: "' + role.nom + '"},';
-    }
-    requete += '],';
+      'role:"' + utilisateur.role + '"';
     requete += '})' +
-      '{nom prenom email roles{id nom} }' +
+      '{nom prenom email role{id nom} }' +
       '}';
     console.log(requete);
     const postResult = this.http.post(environment.api_url, {
@@ -147,8 +141,11 @@ export class UtilisateurDataService {
               const arrayRole = retourUtilisateur.roles.map(
                 (role) => new Role(role.id, role.nom)
               );
-              resolve(new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
-                retourUtilisateur.nom, retourUtilisateur.mdp, arrayRole));
+
+              const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
+                retourUtilisateur.nom, retourUtilisateur.mdp);
+              user.role = new Role(0,"");
+              resolve(user);
             }
           }
         )
