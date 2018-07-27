@@ -41,7 +41,7 @@ export class PaginationDataService {
   public getUtilisateur(page: number, nombreUtilisateur: number): Promise<Pagination> {
     const postResult = this.http.post(environment.api_url, {
       query: '{ pagination(type: "utilisateur", page: ' + page + ', npp: ' + nombreUtilisateur +
-      ') { pageActuelle pageMin pageMax total utilisateurs { id email prenom nom roles { id nom } } } }'
+      ') { pageActuelle pageMin pageMax total utilisateurs { id email prenom nom role { id nom } } } }'
     });
 
     // On créer une promesse
