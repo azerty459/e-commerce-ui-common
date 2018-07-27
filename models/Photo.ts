@@ -4,6 +4,8 @@ export class Photo {
     /**
      * URL de la photo
      */
+    public imgHeight,
+    public imgWidth,
     public id: number,
     public url: string,
     /**

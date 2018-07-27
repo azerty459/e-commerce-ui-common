@@ -31,7 +31,7 @@ export class UtilisateurDataService {
 
   public getUtilisateurById(id: number): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ utilisateurs(id: ' + id + ') { id email prenom nom roles { nom } } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ utilisateurs(id: ' + id + ') { id email prenom nom role { nom } } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -46,7 +46,7 @@ export class UtilisateurDataService {
             } else {
               console.log(response);
               const utilisateur = response['utilisateurs'];
-              const arrayRole = utilisateur.roles.map(
+              const arrayRole = utilisateur.role.map(
                 (role) => new Role(role.id, role.nom)
               );
               const user = new Utilisateur(utilisateur.id, utilisateur.email, utilisateur.prenom, utilisateur.nom,
@@ -79,8 +79,8 @@ export class UtilisateurDataService {
     let requete = 'mutation{addUtilisateur(utilisateur: { ' +
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
-      'roles: {nom:"'+ utilisateur.role.nom +'"}})'+
-      '{nom prenom email roles{id nom} }' +
+      'role: {nom:"'+ utilisateur.role.nom +'"}})'+
+      '{nom prenom email role{id nom} }' +
       '}';
     console.log(requete);
     const postResult = this.http.post(environment.api_url, {query: requete});
@@ -96,7 +96,7 @@ export class UtilisateurDataService {
               resolve(response[0].message);
             } else {
               const retourUtilisateur = response['addUtilisateur'];
-              const arrayRole = retourUtilisateur.roles.map(
+              const arrayRole = retourUtilisateur.role.map(
                 (role) => new Role(role.id, role.nom)
               );
               const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
@@ -138,7 +138,7 @@ export class UtilisateurDataService {
               resolve(response);
             } else {
               const retourUtilisateur = response['updateUtilisateur'];
-              const arrayRole = retourUtilisateur.roles.map(
+              const arrayRole = retourUtilisateur.role.map(
                 (role) => new Role(role.id, role.nom)
               );
 
