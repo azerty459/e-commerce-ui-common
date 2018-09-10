@@ -13,7 +13,8 @@ import {Pagination} from "../models/Pagination";
 
 @Injectable()
 export class CategorieBusinessService {
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient) { }
 
   /**
    * Retourne une erreur si le business n'a pas pu exécuter le post
@@ -31,17 +32,17 @@ export class CategorieBusinessService {
    */
   public getAllCategories(): Promise<Categorie[]> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin } }' });
+    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin{id nom level} } }' });
     // On créer une promesse
-    let promise = new Promise<Categorie[]>((resolve) => {
+    const promise = new Promise<Categorie[]>((resolve) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             const categories = response['categories'];
             // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
-            if(categories != undefined){
+            if (categories !== undefined) {
               // On résout notre promesse
               resolve(categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
             }
@@ -240,7 +241,7 @@ export class CategorieBusinessService {
   public async getTree(): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post qui permet d'obtenir la profondeur de l'arbre
     // formé par les categories
-    const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'})
+    const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'});
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise

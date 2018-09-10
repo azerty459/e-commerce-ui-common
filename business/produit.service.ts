@@ -8,6 +8,9 @@ import {Categorie} from '../models/Categorie';
 import {Photo} from '../models/Photo';
 import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/observable/of';
+import {PaginationDataService} from "./data/pagination-data.service";
+import {FiltreService} from "./filtre.service";
+import {ProduiDataService} from "./data/produitData.service";
 
 
 
@@ -17,7 +20,7 @@ import 'rxjs/add/observable/of';
 
 @Injectable()
 export class ProduitBusiness {
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private paginationDataService: PaginationDataService,private filtreService: FiltreService,private produitDataService: ProduiDataService) {
 
     // Observable mettant à jour l'observable donnant la liste des produits
     this.subject = new Subject<Pagination>();
@@ -26,7 +29,6 @@ export class ProduitBusiness {
   public searchedCategorie: number;
   public searchedCategorieObject;
   public searchedText: string;
-  public pageNumber: number;
   public nbProduits: number;
   public searchDone = false;
   public subject: Subject<Pagination>;
@@ -76,7 +78,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -90,13 +92,20 @@ export class ProduitBusiness {
               resolve(response[0].message);
             } else {
               const produit = response['produits'][0];
+              console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
-              );
+              )
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
+              const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
+              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+                resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              }else{
+                resolvedProduct.photoPrincipale = new Photo(0, "", "");
+              }
+              resolve(resolvedProduct);
             }
           }
         )
@@ -115,13 +124,19 @@ export class ProduitBusiness {
    * @returns {Promise<Pagination>} une promesse de Pagination
    */
   public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string, categorieId: number): Promise<Pagination> {
-
-    this.searchedText = text;
+    if(text != undefined && text !=null){
+      this.searchedText = text;
+    }else {
+      this.searchedText = "";
+    }
+    if(page === undefined){
+      page = 1;
+    }
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
 
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText + '", categorie: ' + categorieId +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} } } }'
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} photoPrincipale{id url nom} } } }'
 
     });
 
@@ -131,8 +146,17 @@ export class ProduitBusiness {
         (response) => {
           console.log(response);
           const pagination = response['pagination'];
-          const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom,
-            produit.description, produit.prixHT, produit.arrayPhoto));
+          const array = [];
+          pagination.produits.map((produit) => {
+            const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.arrayPhoto);
+            if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+              prod.photoPrincipale = new Photo(produit.photoPrincipale.id,  produit.photoPrincipale.url, produit.photoPrincipale.nom);
+            }else{
+              prod.photoPrincipale = new Photo(0, "", "");
+            }
+            array.push(prod);
+          });
+          console.log(array);
           resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
         }
       );
@@ -148,13 +172,32 @@ export class ProduitBusiness {
    * @returns {Promise<void>}
    */
   public async search(text: string, idCategorie:number) {
-    const resultat = await this.getProduitByPaginationSearch(this.pageNumber, this.nbProduits, text,idCategorie);
-    console.log(resultat);
-    this.subject.next(resultat);
+    const result = await this.getProduitByPaginationSearch(this.paginationDataService.paginationProduit.pageActuelle, this.filtreService.getNbProduitParPage(), text, idCategorie);
+    this.produitDataService.produits.arrayProduit = result.tableau;
+    this.produitDataService.produits.length = result.total;
+    this.paginationDataService.paginationProduit.pageActuelle = result.pageActuelle;
+    this.paginationDataService.paginationProduit.pageMax = result.pageMax;
+    this.paginationDataService.paginationProduit.total = result.total;
+    this.paginationDataService.paginationProduit.tableau = result.tableau;
+    this.paginationDataService.paginationProduit.pageMin = result.pageMin;
+    // On est dans le cadre d'une recherche (sauf si la chaîne recherchée est de longueur 0)
+    if (this.searchedText.length === 0) {
+      console.log('pas de recherche texte vide');
+    }
+    // pour le fil d'arianne
+    this.getSearchedCategorie();
+  }
+  public  getSearchedCategorie() {
+    const categorieNode = this.searchedCategorieObject;
+    // 0 équivaut aucune catégorie existante
+    if(categorieNode && categorieNode.id !== 0){
+
+      this.filtreService.categorieForBreadCrum  = new Categorie(categorieNode.id,categorieNode.nomCategorie,undefined,undefined);
+    } else {
+      this.filtreService.categorieForBreadCrum = null;
+    }
 
   }
-
-
   /**
    * Retourne une page paginée selon les paramètres voulus.
    * @param {number} page La page souhaitant être affichée
@@ -164,12 +207,11 @@ export class ProduitBusiness {
   public getProduitByPagination(page: number, nombreDeProduit: number): Promise<Pagination> {
 
     // Stockage des valeurs de la pagination
-    this.pageNumber = page;
     this.nbProduits = nombreDeProduit;
 
     const postResult = this.http.post(environment.api_url, {
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } } } }'
+      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } photoPrincipale{id url nom} } } }'
     });
 
     // On créer une promesse
@@ -184,11 +226,16 @@ export class ProduitBusiness {
             const array = pagination.produits.map((produit) => {
 
               const lesPhotos = produit.photos.map(
-                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
+
 
               // Ajout des photos du produit
               const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+              if(produit.photoPrincipale != undefined && produit.photoPrincipale){
+                prod.photoPrincipale = produit.photoPrincipale;
+              }
+
               prod.arrayPhoto = lesPhotos;
 
               return prod;
@@ -247,12 +294,15 @@ export class ProduitBusiness {
     for( let categorie of produit.arrayCategorie) {
       requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
     }
-
-    requete += '],' +
+    requete += '],';
+    console.log(produit.photoPrincipale);
+    if (produit.photoPrincipale !== undefined && produit.photoPrincipale.id !== 0) {
+      requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
+    }
+    requete +=
       '})' +
-      '{ref nom description prixHT categories{id nom} photos {id url} }' +
+      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} }' +
       '}';
-    console.log(requete);
     const postResult = this.http.post(environment.api_url, {
       query: requete
     });
@@ -267,13 +317,20 @@ export class ProduitBusiness {
               resolve(response);
             } else {
               const produit = response['updateProduit'];
+              console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
               );
               const arrayPhoto = produit.photos.map(
-                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.url)
+                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto));
+              const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
+              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+                resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
+              }else{
+                resolvedProduct.photoPrincipale = new Photo(0, "", "");
+              }
+              resolve(resolvedProduct);
             }
           }
         )

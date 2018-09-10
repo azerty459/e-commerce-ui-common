@@ -18,6 +18,8 @@ export class ArbreService {
    * @type {boolean}
    */
   hasCategories = true;
+  lastDeletedNode: CategorieNode;
+  lastDeletedParentnode: CategorieNode;
   dataChange: BehaviorSubject<CategorieNode[]> = new BehaviorSubject<CategorieNode[]>([]);
   /** Map de flat node vers nested node, elle nous permet de touver la nested node a modifier*/
   flatNodeMap: Map<CategorieFlatNode, CategorieNode> = new Map<CategorieFlatNode, CategorieNode>();
@@ -96,15 +98,14 @@ export class ArbreService {
   public sortNodes(categorieNodes: CategorieNode[]) {
     this.sortArrayNode(categorieNodes);
     for (const categorie of categorieNodes) {
-        if (categorie !== undefined && categorie.children !== undefined) {
-          this.sortNodes(categorie.children);
-        }
+      if (categorie !== undefined && categorie.children !== undefined) {
+        this.sortNodes(categorie.children);
+      }
     }
   }
 
   public sortArrayNode(categorieNodes: CategorieNode[]) {
     for (let ind01 = 0; ind01 < categorieNodes.length; ind01++) {
-
       for (let ind02 = ind01 + 1; ind02 < categorieNodes.length; ind02++) {
         const nodeNotUndefined = categorieNodes[ind01] !== undefined && categorieNodes[ind02] !== undefined;
         const nomCategorieNotUndefined = categorieNodes[ind01].nomCategorie[0] !== undefined && categorieNodes[ind02].nomCategorie[0] !== undefined;
@@ -179,9 +180,6 @@ export class ArbreService {
       }
     }
     if (nodeParent.children.length === 0 ) {
-      console.log('nodeParent'+nodeParent.nomCategorie);
-      console.log('node to delete'+nodeToDelete.nomCategorie);
-      console.log('children parent undefined set');
       nodeParent.children = undefined;
     }
     this.dataChange.next(this.data);
@@ -192,7 +190,7 @@ export class ArbreService {
    */
   insertItem(parent: CategorieNode, nodeToInsert: CategorieNode) {
     // un parent null signifie qu'on souhaite une categorie de level 0
-    if (parent === null ) {
+    if (parent === null || parent === undefined ) {
       this.data.push(nodeToInsert);
       this.dataChange.next(this.data);
     } else {
@@ -247,4 +245,13 @@ export class ArbreService {
     return false;
   }
 
+  /**
+   * Methode permettant la restauration de la dernière node supprimé
+   */
+  public  async restoreLastDeletedNode() {
+    const response = await this.categoriedataBusiness.restoreLastDeletedCategorie();
+    console.log(this.lastDeletedParentnode);
+    this.insertItem(this.lastDeletedParentnode, this.buildFileTree(response.categories, 0)[0]);
+  }
 }
+

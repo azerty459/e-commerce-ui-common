@@ -45,6 +45,7 @@ export class RoleDataService {
           response => {
             const roles = response['roles'];
             // On résout notre promesse
+            console.log(response);
             resolve(roles.map((role) => new Role(role.id, role.nom)));
           }
         )

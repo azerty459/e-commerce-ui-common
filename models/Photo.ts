@@ -12,4 +12,6 @@ export class Photo {
     public nom: string
   ) {}
   public file;
+  public imgHeight;
+  public imgWidth;
 }
