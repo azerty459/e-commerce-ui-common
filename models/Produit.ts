@@ -9,7 +9,8 @@ export class Produit {
     public prixHT: number,
     public arrayCategorie = new Array<Categorie>(),
     public arrayPhoto = new Array<Photo>(),
-    public photoPrincipale = new Photo(0, '', '')
+    public photoPrincipale = new Photo(0, '', ''),
+    public mapCaracteristique = new Map<String, String>()
   ) {}
   public avis: [Avis];
 }
