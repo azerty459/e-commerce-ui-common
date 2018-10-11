@@ -83,7 +83,14 @@ export class PaginationDataService {
         .then(
           response => {
             const pagination = response['pagination'];
-            const array = pagination.produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT));
+            const array = pagination.produits.map((produit) => {
+              const result: Produit = new Produit();
+              result.ref = produit.ref;
+              result.nom = produit.nom;
+              result.description = produit.description;
+              result.prixHT = produit.prixHT;
+              return result;
+            });
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
           }
         )

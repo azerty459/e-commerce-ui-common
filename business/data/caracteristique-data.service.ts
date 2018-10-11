@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {Caracteristique} from '../../models/Caracteristique';
 import {environment} from '../../../src/environments/environment';
 import {Produit} from '../../models/Produit';
+import 'rxjs-compat/add/operator/mergeAll';
 
 @Injectable({
   providedIn: 'root'
@@ -17,14 +18,12 @@ export class CaracteristiqueDataService {
    * Effectue la requête pour récupérer la liste de touts les caractéristiques disponibles et renvoie l'observable.
    */
 
-  public getAllCaracteristiques(): Observable<Caracteristique> {
-    const requete = '{ caracteristiques { nom profondeur} }';
-
-    // TODO demander pour la fin de la requête graphql
-    // TODO voir si ca passe avec observale Object, Object[] (ou any) et du coup .map ou .flatmap? ?
-    const getResult: Observable<Object> = this.http.post<Object>(environment.api_url,
-      {query: requete});
-    return getResult.map(caracJson => Caracteristique.fromJson(caracJson));
+  public getAll(): Observable<Caracteristique> {
+    const requete = '{ caracteristiques { id label } }';
+    const getResult: Observable<Object> = this.http.post<Object>(environment.api_url, {query: requete});
+    return getResult
+      .map(caracJson => Caracteristique.manyFromJson(caracJson))
+      .flatMap(x => x);
   }
 
   /**
@@ -32,12 +31,19 @@ export class CaracteristiqueDataService {
    */
 
   public addCaracteristique(carac: Caracteristique): Observable<any> {
-    const requete = 'mutation{' +
-      'addCaracteristique(caracteristique: { ' +
-      'label: ${carac.label} ' +
-      '})' +
+    const requete = 'mutation{addCaracteristique(caracteristique: { ' +
+      'label: "' + carac.label + '"})' +
       '{label}' +
       '}';
+    return this.http.post<any>(environment.api_url, {query: requete});
+  }
+
+  /**
+   * Effectue la requête pour ajouter plusieurs nouvelles Caractéristiques et renvoie l'observable.
+   */
+
+  public deleteCaracteristique(carac: Caracteristique): Observable<any> {
+    const requete = 'mutation{deleteCaracteristique(id: ' + carac.id + ')}';
     return this.http.post<any>(environment.api_url, {query: requete});
   }
 
