@@ -47,6 +47,17 @@ export class CaracteristiqueDataService {
     return this.http.post<any>(environment.api_url, {query: requete});
   }
 
+  public updateCaracteristique(carac: Caracteristique): Observable<any> {
+    const requete = 'mutation{updateCaracteristique(caracteristique: { ' +
+        'id: ' + carac.id + ', ' +
+        'label: "' + carac.label + '"}' +
+      ')' +
+      '{label}' +
+      '}';
+    return this.http.post<any>(environment.api_url, {query: requete});
+  }
+
+
   /**
    * Effectue la requête pour ajouter des caractéristiques existantes à un produit et renvoie l'observable.
    */

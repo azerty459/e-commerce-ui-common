@@ -2,6 +2,7 @@ import {Caracteristique} from './Caracteristique';
 import {environment} from '../../src/environments/environment';
 import {Categorie} from './Categorie';
 import {Photo} from './Photo';
+import {CaracteristiqueAssociated} from './CaracteristiqueAssociated';
 export class Produit {
 
   // public avis: [Avis];
@@ -12,7 +13,7 @@ export class Produit {
   public arrayCategorie: Categorie[] = [];
   public arrayPhoto: Photo[] = [];
   public photoPrincipale = new Photo(0, '', '');
-  public mapCaracteristique = new Map<Caracteristique, String>();
+  public arrayCaracteristiqueAssociated: CaracteristiqueAssociated[] = [];
 
   constructor() {}
 
@@ -41,8 +42,7 @@ export class Produit {
     result.arrayCategorie = jsonObject.categories.map(
       (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
     );
-    // TODO décommenter pour créer les caractéristiques associées aux produits
-    // result.mapCaracteristique = Produit.createMapCaracteristique(jsonObject.caracteristiques);
+    result.arrayCaracteristiqueAssociated = CaracteristiqueAssociated.manyFromJson(jsonObject.caracteristiquesAssociated);
     result.arrayPhoto = jsonObject.photos.map(
       (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
     );
@@ -54,22 +54,6 @@ export class Produit {
     // fin TODO
 
     return result;
-  }
-
-  /**
-   * Map l'attribut mapCaracteristique de l'objet Produit en Map Typescript
-   * @param jsonObjectCaracteristiques
-   */
-  private static createMapCaracteristique(jsonObjectCaracteristiques: any): Map<Caracteristique, String> {
-    const mapCaracteristique: Map<Caracteristique, String> = new Map<Caracteristique, String>();
-    jsonObjectCaracteristiques.map(
-      caracJson => {
-        const carac: Caracteristique = Caracteristique.oneFromJson(caracJson);
-        const value: string = caracJson.value;
-        mapCaracteristique.set(carac, value);
-      }
-    );
-    return mapCaracteristique;
   }
 
 }

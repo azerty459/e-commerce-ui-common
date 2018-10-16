@@ -30,5 +30,19 @@ export class Caracteristique {
     );
     return result;
   }
+
+  /**
+   * Fonction de comparaison pour le tri
+   *
+   */
+  public static comparatorFn(a: Caracteristique, b: Caracteristique) {
+    if (a.id < b.id) {
+      return -1;
+    } else if (a.id > b.id) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 }
 

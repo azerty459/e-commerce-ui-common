@@ -50,7 +50,7 @@ export class ProduitBusiness {
    */
   public getProduit(): Promise<Produit[]> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits {ref nom description prixHT } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits {ref nom description prixHT caracteristiquesAssociated {caracteristique value} } }'});
     // On créer une promesse
     const promise = new Promise<Produit[]>((resolve) => {
       postResult
@@ -77,7 +77,8 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") ' +
+        '{ref nom description prixHT categories{id nom} photos {id nom url} photoPrincipale{id nom url} caracteristiquesAssociated{caracteristique{id label} value}} }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -88,33 +89,14 @@ export class ProduitBusiness {
             const produits = response['produits'];
             // On résout notre promesse
             if (response['produits'] === undefined) {
+              console.log('TEST');
+              console.log(response);
               resolve(response[0].message);
             } else {
+              console.log('TEST');
+              console.log(response);
               const produit = response['produits'][0];
-
-              /*
-              const arrayCategorie = produit.categories.map(
-                (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
-              )
-              const arrayPhoto = produit.photos.map(
-                (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
-              );
-              const resolvedProduct = new Produit();
-              resolvedProduct.ref = produit.ref;
-              resolvedProduct.nom = produit.nom;
-              resolvedProduct.description = produit.description;
-              resolvedProduct.prixHT = produit.prixHT;
-              resolvedProduct.arrayCategorie = arrayCategorie;
-              resolvedProduct.arrayPhoto = arrayPhoto;
-
-              if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
-                resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              } else {
-                resolvedProduct.photoPrincipale = new Photo(0, '', '');
-              }
-              */
               resolve(Produit.oneCompleteFromJson(produit));
-
             }
           }
         )
@@ -309,26 +291,26 @@ export class ProduitBusiness {
   }
 
   public updateProduit(produit: Produit): Promise<any> {
-    // On récupère l'objet Observable retourné par la requête post
-
     let requete = 'mutation{updateProduit(produit: { ' +
-      'referenceProduit: "' + produit.ref + '", ' +
-      'nom: "' + produit.nom + '", ' +
+      'ref: "' + produit.ref + '", ' +
+      'nom1: "' + produit.nom + '", ' +
       'description: "' + produit.description + '", ' +
       'prixHT: ' + produit.prixHT + ', ' +
       'categories:[ ';
 
-    for (let categorie of produit.arrayCategorie) {
+    for (const categorie of produit.arrayCategorie) {
       requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
     }
-    requete += '],';
-    console.log(produit.photoPrincipale);
+
+    requete = requete.substring(0, requete.length - 1);
+    requete += ']';
+
     if (produit.photoPrincipale !== undefined && produit.photoPrincipale.id !== 0) {
-      requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
+      requete += ', photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
     }
     requete +=
       '})' +
-      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} }' +
+      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} caracteristiquesAssociated{caracteristique value}}' +
       '}';
     const postResult = this.http.post(environment.api_url, {
       query: requete
@@ -370,6 +352,7 @@ export class ProduitBusiness {
         )
         .catch(this.handleError);
     });
+    // On récupère l'objet Observable retourné par la requête post
     return promise;
   }
 
