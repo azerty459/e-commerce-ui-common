@@ -22,8 +22,7 @@ export class CaracteristiqueDataService {
     const requete = '{ caracteristiques { id label } }';
     const getResult: Observable<Object> = this.http.post<Object>(environment.api_url, {query: requete});
     return getResult
-      .map(caracJson => Caracteristique.manyFromJson(caracJson))
-      .flatMap(x => x);
+      .flatMap(caracJson => Caracteristique.manyFromJson(caracJson))
   }
 
   /**

@@ -56,6 +56,36 @@ export class Produit {
     return result;
   }
 
+  public isAssociatedWithCaracteristique(carac: Caracteristique): boolean {
+    let result = false;
+    for (const caracAssociated of this.arrayCaracteristiqueAssociated) {
+      if (caracAssociated.caracteristique.id === carac.id && caracAssociated.caracteristique.label) {
+        result = true;
+        break;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Fonction réalisant une copie réelle de tous les attributs de l'objet produit, et retournant ce nouvel objet.
+   * @param produit
+   */
+  public createSame(): Produit {
+    const result: Produit = Object.assign({}, this);
+    result.arrayCategorie = Object.assign(
+      [...result.arrayCategorie],
+      this.arrayCategorie);
+    result.arrayPhoto = Object.assign(
+      [...result.arrayPhoto],
+      this.arrayPhoto);
+    result.arrayCaracteristiqueAssociated = Object.assign(
+      [...result.arrayCaracteristiqueAssociated],
+      this.arrayCaracteristiqueAssociated);
+    return result;
+
+  }
+
 }
 
 
