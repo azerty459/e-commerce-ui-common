@@ -293,24 +293,35 @@ export class ProduitBusiness {
   public updateProduit(produit: Produit): Promise<any> {
     let requete = 'mutation{updateProduit(produit: { ' +
       'ref: "' + produit.ref + '", ' +
-      'nom1: "' + produit.nom + '", ' +
+      'nom: "' + produit.nom + '", ' +
       'description: "' + produit.description + '", ' +
       'prixHT: ' + produit.prixHT + ', ' +
       'categories:[ ';
 
     for (const categorie of produit.arrayCategorie) {
-      requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
+      requete += '{ id: ' + categorie.id + ', nom:"' + categorie.nomCat + '"},';
     }
+    requete = requete.substring(0, requete.length - 1);
+    requete += ']';
 
+    requete += ', ' +
+      'caracteristiquesAssociated:[';
+
+    for (const caracteristiqueAssociated of produit.arrayCaracteristiqueAssociated) {
+      requete += '{ caracteristique: {id: ' + caracteristiqueAssociated.caracteristique.id + ', '
+        + 'label: "' + caracteristiqueAssociated.caracteristique.label + '"}'
+        + ', value:"' + caracteristiqueAssociated.value + '"},';
+    }
     requete = requete.substring(0, requete.length - 1);
     requete += ']';
 
     if (produit.photoPrincipale !== undefined && produit.photoPrincipale.id !== 0) {
       requete += ', photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
     }
+
     requete +=
       '})' +
-      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} caracteristiquesAssociated{caracteristique value}}' +
+      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} caracteristiquesAssociated{caracteristique{id label} value}}' +
       '}';
     const postResult = this.http.post(environment.api_url, {
       query: requete
