@@ -78,10 +78,5 @@ export class StatistiqueBusiness {
     });
 
     return promise;
-    
-      
-      
-    
-   
   }
 }
