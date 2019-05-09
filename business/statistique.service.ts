@@ -4,15 +4,10 @@ import {environment} from '../../src/environments/environment';
 import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/observable/of';
 import { Statistique } from '../models/Statistique';
-import { resolve } from 'q';
-/*import { catchError } from 'rxjs/internal/operators';
-import { resolve } from 'path';
-import { post } from 'selenium-webdriver/http';*/
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet statistique.
  */
-
 @Injectable()
 export class StatistiqueBusiness {
   constructor(
