@@ -1,6 +1,4 @@
-
-import {Injectable} from '@angular/core';
-import {Produit} from "../../models/Produit";
+import {Injectable} from "@angular/core";
 import {Produits} from "../../models/Produits";
 
 
@@ -10,7 +8,7 @@ export class ProduiDataService {
   /**
    * Tableau de produits à afficher
    */
-  public produits: Produits = new Produits([],0);
+  public produits: Produits = new Produits([], 0);
   /**
    * Taille du tableau de produits à afficher
    */

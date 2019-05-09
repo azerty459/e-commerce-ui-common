@@ -1,3 +1,2 @@
-
-<i *ngIf="urlPrecedente !== '/'" class="material-icons backArrow"  (click)="goBack()">arrow_back</i>
-<i *ngIf="urlPrecedente === '/'" class="material-icons backArrow"  (click)="goBack()">home</i>
+<i (click)="goBack()" *ngIf="urlPrecedente !== '/'" class="material-icons backArrow">arrow_back</i>
+<i (click)="goBack()" *ngIf="urlPrecedente === '/'" class="material-icons backArrow">home</i>

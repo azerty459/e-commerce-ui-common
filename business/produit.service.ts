@@ -1,17 +1,16 @@
-import {throwError as observableThrowError} from 'rxjs';
-import {Observable, ObservableInput, Subject} from 'rxjs/index';
-import {Produit} from '../models/Produit';
-import {Injectable} from '@angular/core';
-import {environment} from '../../src/environments/environment';
+import {throwError as observableThrowError} from "rxjs";
+import {Observable, Subject} from "rxjs/index";
+import {Produit} from "../models/Produit";
+import {Injectable} from "@angular/core";
+import {environment} from "../../src/environments/environment";
 import {Pagination} from "../models/Pagination";
-import {Categorie} from '../models/Categorie';
-import {Photo} from '../models/Photo';
-import {HttpClient} from '@angular/common/http';
-import 'rxjs/add/observable/of';
+import {Categorie} from "../models/Categorie";
+import {Photo} from "../models/Photo";
+import {HttpClient} from "@angular/common/http";
+import "rxjs/add/observable/of";
 import {PaginationDataService} from "./data/pagination-data.service";
 import {FiltreService} from "./filtre.service";
 import {ProduiDataService} from "./data/produitData.service";
-
 
 
 /**
@@ -20,12 +19,6 @@ import {ProduiDataService} from "./data/produitData.service";
 
 @Injectable()
 export class ProduitBusiness {
-  constructor(private http: HttpClient, private paginationDataService: PaginationDataService,private filtreService: FiltreService,private produitDataService: ProduiDataService) {
-
-    // Observable mettant à jour l'observable donnant la liste des produits
-    this.subject = new Subject<Pagination>();
-
-  }
   public searchedCategorie: number;
   public searchedCategorieObject;
   public searchedText: string;
@@ -33,15 +26,11 @@ export class ProduitBusiness {
   public searchDone = false;
   public subject: Subject<Pagination>;
 
+  constructor(private http: HttpClient, private paginationDataService: PaginationDataService, private filtreService: FiltreService, private produitDataService: ProduiDataService) {
 
-  /**
-   * Retourne une erreur si le business n'a pas pu exécuter le post
-   * @param {Response | any} error Erreur à afficher ou rien
-   * @returns {ErrorObservable} Un observable contenant l'erreur
-   */
-  private handleError(error: Response | any) {
-    console.error('ApiService::handleError', error);
-    return observableThrowError(error);
+    // Observable mettant à jour l'observable donnant la liste des produits
+    this.subject = new Subject<Pagination>();
+
   }
 
   /**
@@ -50,7 +39,7 @@ export class ProduitBusiness {
    */
   public getProduit(): Promise<Produit[]> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits {ref nom description prixHT } }'});
+    const postResult = this.http.post(environment.api_url, {query: "{ produits {ref nom description prixHT } }"});
     // On créer une promesse
     const promise = new Promise<Produit[]>((resolve) => {
       postResult
@@ -58,7 +47,7 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            const produits = response['produits'];
+            const produits = response["produits"];
             // On résout notre promesse
             resolve(produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne)));
           }
@@ -68,8 +57,6 @@ export class ProduitBusiness {
     return promise;
   }
 
-
-
   /**
    * Va chercher un produit correspondant à la ref indiqué en paramètre
    * On utilise un map pour récupérer un tableau (arrayCategorie) composé des différentes catégories du produit.
@@ -78,7 +65,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT noteMoyenne categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: "{ produits(ref: \"" + refProduit + "\") {ref nom description prixHT noteMoyenne categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }"});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -87,23 +74,23 @@ export class ProduitBusiness {
         .then(
           response => {
 
-            const produits = response['produits'];
+            const produits = response["produits"];
             // On résout notre promesse
-            if (response['produits'] === undefined) {
+            if (response["produits"] === undefined) {
               resolve(response[0].message);
             } else {
-              const produit = response['produits'][0];
+              const produit = response["produits"][0];
               console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
-              )
+              );
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne, arrayCategorie, arrayPhoto);
-              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+              if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
                 resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              }else{
+              } else {
                 resolvedProduct.photoPrincipale = new Photo(0, "", "");
               }
               resolve(resolvedProduct);
@@ -115,7 +102,6 @@ export class ProduitBusiness {
     return promise;
   }
 
-
   /**
    * Communique avec l'API pour aller chercher le texte recherché et selon la pagination demandée
    * @param {number} page ne n° de page sur laquelle on est
@@ -125,34 +111,34 @@ export class ProduitBusiness {
    * @returns {Promise<Pagination>} une promesse de Pagination
    */
   public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string, categorieId: number): Promise<Pagination> {
-    if(text != undefined && text !=null){
+    if (text != undefined && text != null) {
       this.searchedText = text;
-    }else {
+    } else {
       this.searchedText = "";
     }
-    if(page === undefined){
+    if (page === undefined) {
       page = 1;
     }
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
 
-      query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText + '", categorie: ' + categorieId +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} photoPrincipale{id url nom} } } }'
+      query: "{ pagination(type: \"produit\", page: " + page + ", npp: " + nombreDeProduit + ", nom: \"" + this.searchedText + "\", categorie: " + categorieId +
+        ") { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} photoPrincipale{id url nom} } } }"
 
     });
 
-    const promise = new Promise<Pagination> ( (resolve, reject) => {
+    const promise = new Promise<Pagination>((resolve, reject) => {
 
       postResult.toPromise().then(
         (response) => {
           console.log(response);
-          const pagination = response['pagination'];
-          const array = [];
+          const pagination = response["pagination"];
+          const array = [];
           pagination.produits.map((produit) => {
             const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.arrayPhoto);
-            if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
-              prod.photoPrincipale = new Photo(produit.photoPrincipale.id,  produit.photoPrincipale.url, produit.photoPrincipale.nom);
-            }else{
+            if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
+              prod.photoPrincipale = new Photo(produit.photoPrincipale.id, produit.photoPrincipale.url, produit.photoPrincipale.nom);
+            } else {
               prod.photoPrincipale = new Photo(0, "", "");
             }
             array.push(prod);
@@ -172,7 +158,7 @@ export class ProduitBusiness {
    * @param idCategorie
    * @returns {Promise<void>}
    */
-  public async search(text: string, idCategorie:number) {
+  public async search(text: string, idCategorie: number) {
     const result = await this.getProduitByPaginationSearch(this.paginationDataService.paginationProduit.pageActuelle, this.filtreService.getNbProduitParPage(), text, idCategorie);
     this.produitDataService.produits.arrayProduit = result.tableau;
     this.produitDataService.produits.length = result.total;
@@ -183,22 +169,24 @@ export class ProduitBusiness {
     this.paginationDataService.paginationProduit.pageMin = result.pageMin;
     // On est dans le cadre d'une recherche (sauf si la chaîne recherchée est de longueur 0)
     if (this.searchedText.length === 0) {
-      console.log('pas de recherche texte vide');
+      console.log("pas de recherche texte vide");
     }
     // pour le fil d'arianne
     this.getSearchedCategorie();
   }
-  public  getSearchedCategorie() {
+
+  public getSearchedCategorie() {
     const categorieNode = this.searchedCategorieObject;
     // 0 équivaut aucune catégorie existante
-    if(categorieNode && categorieNode.id !== 0){
+    if (categorieNode && categorieNode.id !== 0) {
 
-      this.filtreService.categorieForBreadCrum  = new Categorie(categorieNode.id,categorieNode.nomCategorie,undefined,undefined);
+      this.filtreService.categorieForBreadCrum = new Categorie(categorieNode.id, categorieNode.nomCategorie, undefined, undefined);
     } else {
       this.filtreService.categorieForBreadCrum = null;
     }
 
   }
+
   /**
    * Retourne une page paginée selon les paramètres voulus.
    * @param {number} page La page souhaitant être affichée
@@ -211,8 +199,8 @@ export class ProduitBusiness {
     this.nbProduits = nombreDeProduit;
 
     const postResult = this.http.post(environment.api_url, {
-      query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } photoPrincipale{id url nom} } } }'
+      query: "{ pagination(type: \"produit\", page: " + page + ", npp: " + nombreDeProduit +
+        ") { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } photoPrincipale{id url nom} } } }"
     });
 
     // On créer une promesse
@@ -222,7 +210,7 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            const pagination = response['pagination'];
+            const pagination = response["pagination"];
 
             const array = pagination.produits.map((produit) => {
 
@@ -233,14 +221,14 @@ export class ProduitBusiness {
 
               // Ajout des photos du produit
               const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne);
-              if(produit.photoPrincipale != undefined && produit.photoPrincipale){
+              if (produit.photoPrincipale != undefined && produit.photoPrincipale) {
                 prod.photoPrincipale = produit.photoPrincipale;
               }
 
               prod.arrayPhoto = lesPhotos;
 
               return prod;
-            } );
+            });
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
           }
         )
@@ -250,7 +238,6 @@ export class ProduitBusiness {
 
   }
 
-
   /**
    * Ajoute un produit.
    * @param {Produit} produit Le produit à ajouter
@@ -258,10 +245,10 @@ export class ProduitBusiness {
    */
   public addProduit(produit: Produit): Promise<any> {
     if (produit.description == null) {
-      produit.description = '';
+      produit.description = "";
     }
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation {addProduit(ref: "' + produit.ref + '", nom: "' + produit.nom + '", description: "' + produit.description + '", prixHT: ' + produit.prixHT + ') { ref nom description prixHT}}'});
+    const postResult = this.http.post(environment.api_url, {query: "mutation {addProduit(ref: \"" + produit.ref + "\", nom: \"" + produit.nom + "\", description: \"" + produit.description + "\", prixHT: " + produit.prixHT + ") { ref nom description prixHT}}"});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -269,11 +256,11 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            if (response['addProduit'] === undefined) {
+            if (response["addProduit"] === undefined) {
               resolve(response);
             } else {
-              const produit = response['addProduit'];
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT,produit.noteMoyenne, [], []));
+              const produit = response["addProduit"];
+              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne, [], []));
             }
           }
         )
@@ -285,25 +272,25 @@ export class ProduitBusiness {
   public updateProduit(produit: Produit): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
 
-    let requete = 'mutation{updateProduit(produit: { ' +
-      'referenceProduit: "' + produit.ref + '", ' +
-      'nom: "' + produit.nom + '", ' +
-      'description: "' + produit.description + '", ' +
-      'prixHT: ' + produit.prixHT + ', ' +
-      'categories:[ ';
+    let requete = "mutation{updateProduit(produit: { " +
+      "referenceProduit: \"" + produit.ref + "\", " +
+      "nom: \"" + produit.nom + "\", " +
+      "description: \"" + produit.description + "\", " +
+      "prixHT: " + produit.prixHT + ", " +
+      "categories:[ ";
 
-    for( let categorie of produit.arrayCategorie) {
-      requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
+    for (let categorie of produit.arrayCategorie) {
+      requete += "{ idCategorie: " + categorie.id + ", nomCategorie:\"" + categorie.nomCat + "\"},";
     }
-    requete += '],';
+    requete += "],";
     console.log(produit.photoPrincipale);
     if (produit.photoPrincipale !== undefined && produit.photoPrincipale.id !== 0) {
-      requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
+      requete += "photoPrincipale: {idPhoto: " + produit.photoPrincipale.id + "}";
     }
     requete +=
-      '})' +
-      '{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} }' +
-      '}';
+      "})" +
+      "{ref nom description prixHT categories{id nom} photos {id url nom} photoPrincipale{id url nom} }" +
+      "}";
     const postResult = this.http.post(environment.api_url, {
       query: requete
     });
@@ -314,10 +301,10 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            if (response['updateProduit'] === undefined) {
+            if (response["updateProduit"] === undefined) {
               resolve(response);
             } else {
-              const produit = response['updateProduit'];
+              const produit = response["updateProduit"];
               console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
@@ -326,9 +313,9 @@ export class ProduitBusiness {
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
-              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+              if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
                 resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              }else{
+              } else {
                 resolvedProduct.photoPrincipale = new Photo(0, "", "");
               }
               resolve(resolvedProduct);
@@ -342,7 +329,7 @@ export class ProduitBusiness {
 
   public deleteProduit(produit: Produit): Promise<boolean> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation{deleteProduit(ref: "' + produit.ref + '")}'})
+    const postResult = this.http.post(environment.api_url, {query: "mutation{deleteProduit(ref: \"" + produit.ref + "\")}"});
     // On créer une promesse
     const promise = new Promise<boolean>((resolve) => {
       postResult
@@ -350,7 +337,7 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
-            resolve(response['deleteProduit']);
+            resolve(response["deleteProduit"]);
           }
         )
         .catch(this.handleError);
@@ -367,8 +354,8 @@ export class ProduitBusiness {
   public addCategorieProduit(produit: Produit, categorie: Categorie): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {
-      query: 'mutation{updateProduit(ref:"' + produit.ref + '",nouvelleCat: ' + categorie.id +
-      '){ref nom description prixHT categories{id nom} photos {url} }}'
+      query: "mutation{updateProduit(ref:\"" + produit.ref + "\",nouvelleCat: " + categorie.id +
+        "){ref nom description prixHT categories{id nom} photos {url} }}"
     });
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
@@ -379,10 +366,10 @@ export class ProduitBusiness {
           response => {
             let retour;
             console.log(response);
-            if (response['updateProduit'] == undefined) {
+            if (response["updateProduit"] == undefined) {
               retour = response[0].message;
             } else {
-              const categorie = response['updateProduit'];
+              const categorie = response["updateProduit"];
               retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             }
             // On résout notre promesse
@@ -402,7 +389,7 @@ export class ProduitBusiness {
    */
   public deleteCategorieProduit(produit: Produit, categorie: Categorie): Promise<Produit> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation{updateProduit(ref:"' + produit.ref + '",supprimerCat:' + categorie.id + ') {ref nom description prixHT categories{id nom} photos {url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: "mutation{updateProduit(ref:\"" + produit.ref + "\",supprimerCat:" + categorie.id + ") {ref nom description prixHT categories{id nom} photos {url} } }"});
     // On créer une promesse
     const promise = new Promise<Produit>((resolve) => {
       postResult
@@ -411,7 +398,7 @@ export class ProduitBusiness {
         .then(
           response => {
             // On résout notre promesse
-            resolve(response['updateProduit']);
+            resolve(response["updateProduit"]);
           }
         )
         .catch(this.handleError);
@@ -445,7 +432,7 @@ export class ProduitBusiness {
 
   public removePhoto(photo: Photo): Promise<Produit> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation{deletePhoto(id:' + photo.id + ') }'});
+    const postResult = this.http.post(environment.api_url, {query: "mutation{deletePhoto(id:" + photo.id + ") }"});
     // On créer une promesse
     const promise = new Promise<Produit>((resolve) => {
       postResult
@@ -454,12 +441,22 @@ export class ProduitBusiness {
         .then(
           response => {
             // On résout notre promesse
-            resolve(response['deletePhoto']);
+            resolve(response["deletePhoto"]);
           }
         )
         .catch(this.handleError);
     });
     return promise;
+  }
+
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
+  private handleError(error: Response | any) {
+    console.error("ApiService::handleError", error);
+    return observableThrowError(error);
   }
 }
 

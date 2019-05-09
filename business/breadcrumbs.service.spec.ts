@@ -1,15 +1,15 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {inject, TestBed} from "@angular/core/testing";
 
-import { BreadcrumbsService } from './breadcrumbs.service';
+import {BreadcrumbsService} from "./breadcrumbs.service";
 
-describe('BreadcrumbsService', () => {
+describe("BreadcrumbsService", () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [BreadcrumbsService]
     });
   });
 
-  it('should be created', inject([BreadcrumbsService], (service: BreadcrumbsService) => {
+  it("should be created", inject([BreadcrumbsService], (service: BreadcrumbsService) => {
     expect(service).toBeTruthy();
   }));
 });

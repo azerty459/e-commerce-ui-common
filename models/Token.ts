@@ -1,6 +1,11 @@
-import {Utilisateur} from './Utilisateur';
+import {Utilisateur} from "./Utilisateur";
 
 export class Token {
+  constructor(
+    private _utilisateur: Utilisateur
+  ) {
+  }
+
   get utilisateur(): Utilisateur {
     return this._utilisateur;
   }
@@ -8,9 +13,7 @@ export class Token {
   set utilisateur(value: Utilisateur) {
     this._utilisateur = value;
   }
-  constructor(
-    private _utilisateur: Utilisateur
-  ) {}
+
   private _token: string;
   get token(): string {
     return this._token;

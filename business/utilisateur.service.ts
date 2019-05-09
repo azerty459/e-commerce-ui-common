@@ -1,11 +1,4 @@
-
-import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-
-import { Categorie } from '../models/Categorie';
-import { environment } from '../../src/environments/environment';
-import {Pagination} from "../models/Pagination";
+import {Injectable} from "@angular/core";
 import {UtilisateurDataService} from "./data/utilisateur-data.service";
 import {Utilisateur} from "../models/Utilisateur";
 
@@ -19,7 +12,7 @@ export class UtilisateurService {
   private utilisateur: Utilisateur;
 
   constructor(private utilisateurData: UtilisateurDataService) {
-    this.utilisateur = new Utilisateur(null, null, null , null, null);
+    this.utilisateur = new Utilisateur(null, null, null, null, null);
   }
 
   public async getById(id: number) {

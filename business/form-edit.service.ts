@@ -1,11 +1,12 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 
 @Injectable()
 export class FormEditService {
 
   private _dirty = false;
 
-  constructor() {}
+  constructor() {
+  }
 
   public isDirty(): boolean {
     return this._dirty;

@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import { environment } from '../../../src/environments/environment';
-import {throwError as observableThrowError} from 'rxjs/index';
-import {Produit} from '../../models/Produit';
-import {Utilisateur} from '../../models/Utilisateur';
-import {Role} from '../../models/Role';
+import {Injectable} from "@angular/core";
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../../src/environments/environment";
+import {throwError as observableThrowError} from "rxjs/index";
+import {Produit} from "../../models/Produit";
+import {Role} from "../../models/Role";
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet produit.
@@ -12,21 +11,11 @@ import {Role} from '../../models/Role';
 
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class RoleDataService {
 
   constructor(private http: HttpClient) {
-  }
-
-  /**
-   * Retourne une erreur si le business n'a pas pu exécuter le post
-   * @param {Response | any} error Erreur à afficher ou rien
-   * @returns {ErrorObservable} Un observable contenant l'erreur
-   */
-  private handleError(error: Response | any) {
-    console.error('ApiService::handleError', error);
-    return observableThrowError(error);
   }
 
   /**
@@ -35,7 +24,7 @@ export class RoleDataService {
    */
   public getRole(): Promise<Role[]> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ roles {id nom } }'});
+    const postResult = this.http.post(environment.api_url, {query: "{ roles {id nom } }"});
     // On créer une promesse
     const promise = new Promise<Role[]>((resolve) => {
       postResult
@@ -43,7 +32,7 @@ export class RoleDataService {
         .toPromise()
         .then(
           response => {
-            const roles = response['roles'];
+            const roles = response["roles"];
             // On résout notre promesse
             console.log(response);
             resolve(roles.map((role) => new Role(role.id, role.nom)));
@@ -52,5 +41,15 @@ export class RoleDataService {
         .catch(this.handleError);
     });
     return promise;
+  }
+
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
+  private handleError(error: Response | any) {
+    console.error("ApiService::handleError", error);
+    return observableThrowError(error);
   }
 }

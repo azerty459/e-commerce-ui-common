@@ -5,8 +5,9 @@ export class Avis {
     public description: string,
     public note: number,
     public date: string,
-    public refProduit:string,
-  ) {}
+    public refProduit: string,
+  ) {
+  }
 
 
 }
