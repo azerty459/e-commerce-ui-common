@@ -50,7 +50,7 @@ export class ProduitBusiness {
    */
   public getProduit(): Promise<Produit[]> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits {ref nom description prixHT } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits {ref nom description prixHT noteMoyenne} }'});
     // On créer une promesse
     const promise = new Promise<Produit[]>((resolve) => {
       postResult
