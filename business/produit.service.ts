@@ -60,7 +60,7 @@ export class ProduitBusiness {
           response => {
             const produits = response['produits'];
             // On résout notre promesse
-            resolve(produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT)));
+            resolve(produits.map((produit) => new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne)));
           }
         )
         .catch(this.handleError);
@@ -78,7 +78,7 @@ export class ProduitBusiness {
    */
   public getProduitByRef(refProduit: String): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ produits(ref: "' + refProduit + '") {ref nom description prixHT noteMoyenne categories{id nom} photos {id nom url} photoPrincipale{id nom url} } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -86,6 +86,7 @@ export class ProduitBusiness {
         .toPromise()
         .then(
           response => {
+
             const produits = response['produits'];
             // On résout notre promesse
             if (response['produits'] === undefined) {
@@ -99,7 +100,7 @@ export class ProduitBusiness {
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
-              const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
+              const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne, arrayCategorie, arrayPhoto);
               if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
                 resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
               }else{
@@ -231,7 +232,7 @@ export class ProduitBusiness {
 
 
               // Ajout des photos du produit
-              const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT);
+              const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne);
               if(produit.photoPrincipale != undefined && produit.photoPrincipale){
                 prod.photoPrincipale = produit.photoPrincipale;
               }
@@ -272,7 +273,7 @@ export class ProduitBusiness {
               resolve(response);
             } else {
               const produit = response['addProduit'];
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, [], []));
+              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT,produit.noteMoyenne, [], []));
             }
           }
         )

@@ -10,7 +10,7 @@ import {UtilisateurDataService} from "./data/utilisateur-data.service";
 import {Utilisateur} from "../models/Utilisateur";
 
 /**
- * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
+ * Business permettant de gérer les requêtes au niveau de l'api pour l'objet utilisateur.
  */
 
 @Injectable()

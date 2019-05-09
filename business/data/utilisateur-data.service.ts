@@ -45,10 +45,12 @@ export class UtilisateurDataService {
               resolve(response[0].message);
             } else {
               console.log(response);
-              const utilisateur = response['utilisateurs'];
-              const arrayRole = utilisateur.role.map(
-                (role) => new Role(role.id, role.nom)
-              );
+              const utilisateur = response['utilisateurs'][0];     
+              if (utilisateur.role !== null) {
+                const arrayRole = utilisateur.role.map(
+                  (role) => new Role(role.id, role.nom)
+                );
+              }
               const user = new Utilisateur(utilisateur.id, utilisateur.email, utilisateur.prenom, utilisateur.nom,
                 '');
               user.role = new Role(0,"");
