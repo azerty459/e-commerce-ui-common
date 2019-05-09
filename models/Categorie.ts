@@ -5,7 +5,8 @@ export class Categorie {
     public nomCat: string,
     public level: number,
     public chemin: [Categorie],
-  ) {}
+  ) {
+  }
 
   /**
    * Compare 2 catégories

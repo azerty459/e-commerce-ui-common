@@ -1,17 +1,16 @@
 import {throwError as observableThrowError} from 'rxjs';
-import {Observable, ObservableInput, Subject} from 'rxjs/index';
+import {Observable, Subject} from 'rxjs/index';
 import {Produit} from '../models/Produit';
 import {Injectable} from '@angular/core';
 import {environment} from '../../src/environments/environment';
-import {Pagination} from "../models/Pagination";
+import {Pagination} from '../models/Pagination';
 import {Categorie} from '../models/Categorie';
 import {Photo} from '../models/Photo';
 import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/observable/of';
-import {PaginationDataService} from "./data/pagination-data.service";
-import {FiltreService} from "./filtre.service";
-import {ProduiDataService} from "./data/produitData.service";
-
+import {PaginationDataService} from './data/pagination-data.service';
+import {FiltreService} from './filtre.service';
+import {ProduiDataService} from './data/produitData.service';
 
 
 /**
@@ -20,12 +19,6 @@ import {ProduiDataService} from "./data/produitData.service";
 
 @Injectable()
 export class ProduitBusiness {
-  constructor(private http: HttpClient, private paginationDataService: PaginationDataService,private filtreService: FiltreService,private produitDataService: ProduiDataService) {
-
-    // Observable mettant à jour l'observable donnant la liste des produits
-    this.subject = new Subject<Pagination>();
-
-  }
   public searchedCategorie: number;
   public searchedCategorieObject;
   public searchedText: string;
@@ -33,15 +26,11 @@ export class ProduitBusiness {
   public searchDone = false;
   public subject: Subject<Pagination>;
 
+  constructor(private http: HttpClient, private paginationDataService: PaginationDataService, private filtreService: FiltreService, private produitDataService: ProduiDataService) {
 
-  /**
-   * Retourne une erreur si le business n'a pas pu exécuter le post
-   * @param {Response | any} error Erreur à afficher ou rien
-   * @returns {ErrorObservable} Un observable contenant l'erreur
-   */
-  private handleError(error: Response | any) {
-    console.error('ApiService::handleError', error);
-    return observableThrowError(error);
+    // Observable mettant à jour l'observable donnant la liste des produits
+    this.subject = new Subject<Pagination>();
+
   }
 
   /**
@@ -67,8 +56,6 @@ export class ProduitBusiness {
     });
     return promise;
   }
-
-
 
   /**
    * Va chercher un produit correspondant à la ref indiqué en paramètre
@@ -96,15 +83,15 @@ export class ProduitBusiness {
               console.log(produit);
               const arrayCategorie = produit.categories.map(
                 (categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin)
-              )
+              );
               const arrayPhoto = produit.photos.map(
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne, arrayCategorie, arrayPhoto);
-              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+              if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
                 resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              }else{
-                resolvedProduct.photoPrincipale = new Photo(0, "", "");
+              } else {
+                resolvedProduct.photoPrincipale = new Photo(0, '', '');
               }
               resolve(resolvedProduct);
             }
@@ -115,7 +102,6 @@ export class ProduitBusiness {
     return promise;
   }
 
-
   /**
    * Communique avec l'API pour aller chercher le texte recherché et selon la pagination demandée
    * @param {number} page ne n° de page sur laquelle on est
@@ -125,35 +111,35 @@ export class ProduitBusiness {
    * @returns {Promise<Pagination>} une promesse de Pagination
    */
   public getProduitByPaginationSearch(page: number, nombreDeProduit: number, text: string, categorieId: number): Promise<Pagination> {
-    if(text != undefined && text !=null){
+    if (text != undefined && text != null) {
       this.searchedText = text;
-    }else {
-      this.searchedText = "";
+    } else {
+      this.searchedText = '';
     }
-    if(page === undefined){
+    if (page === undefined) {
       page = 1;
     }
 
     const postResult = this.http.post<Pagination>(environment.api_url, {
 
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit + ', nom: "' + this.searchedText + '", categorie: ' + categorieId +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} photoPrincipale{id url nom} } } }'
+        ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos {url} photoPrincipale{id url nom} } } }'
 
     });
 
-    const promise = new Promise<Pagination> ( (resolve, reject) => {
+    const promise = new Promise<Pagination>((resolve, reject) => {
 
       postResult.toPromise().then(
         (response) => {
           console.log(response);
           const pagination = response['pagination'];
-          const array = [];
+          const array = [];
           pagination.produits.map((produit) => {
             const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.arrayPhoto);
-            if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
-              prod.photoPrincipale = new Photo(produit.photoPrincipale.id,  produit.photoPrincipale.url, produit.photoPrincipale.nom);
-            }else{
-              prod.photoPrincipale = new Photo(0, "", "");
+            if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
+              prod.photoPrincipale = new Photo(produit.photoPrincipale.id, produit.photoPrincipale.url, produit.photoPrincipale.nom);
+            } else {
+              prod.photoPrincipale = new Photo(0, '', '');
             }
             array.push(prod);
           });
@@ -172,7 +158,7 @@ export class ProduitBusiness {
    * @param idCategorie
    * @returns {Promise<void>}
    */
-  public async search(text: string, idCategorie:number) {
+  public async search(text: string, idCategorie: number) {
     const result = await this.getProduitByPaginationSearch(this.paginationDataService.paginationProduit.pageActuelle, this.filtreService.getNbProduitParPage(), text, idCategorie);
     this.produitDataService.produits.arrayProduit = result.tableau;
     this.produitDataService.produits.length = result.total;
@@ -188,17 +174,19 @@ export class ProduitBusiness {
     // pour le fil d'arianne
     this.getSearchedCategorie();
   }
-  public  getSearchedCategorie() {
+
+  public getSearchedCategorie() {
     const categorieNode = this.searchedCategorieObject;
     // 0 équivaut aucune catégorie existante
-    if(categorieNode && categorieNode.id !== 0){
+    if (categorieNode && categorieNode.id !== 0) {
 
-      this.filtreService.categorieForBreadCrum  = new Categorie(categorieNode.id,categorieNode.nomCategorie,undefined,undefined);
+      this.filtreService.categorieForBreadCrum = new Categorie(categorieNode.id, categorieNode.nomCategorie, undefined, undefined);
     } else {
       this.filtreService.categorieForBreadCrum = null;
     }
 
   }
+
   /**
    * Retourne une page paginée selon les paramètres voulus.
    * @param {number} page La page souhaitant être affichée
@@ -212,7 +200,7 @@ export class ProduitBusiness {
 
     const postResult = this.http.post(environment.api_url, {
       query: '{ pagination(type: "produit", page: ' + page + ', npp: ' + nombreDeProduit +
-      ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } photoPrincipale{id url nom} } } }'
+        ') { pageActuelle pageMin pageMax total produits { ref nom description prixHT photos { url } photoPrincipale{id url nom} } } }'
     });
 
     // On créer une promesse
@@ -233,14 +221,14 @@ export class ProduitBusiness {
 
               // Ajout des photos du produit
               const prod = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne);
-              if(produit.photoPrincipale != undefined && produit.photoPrincipale){
+              if (produit.photoPrincipale != undefined && produit.photoPrincipale) {
                 prod.photoPrincipale = produit.photoPrincipale;
               }
 
               prod.arrayPhoto = lesPhotos;
 
               return prod;
-            } );
+            });
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
           }
         )
@@ -249,7 +237,6 @@ export class ProduitBusiness {
     return promise;
 
   }
-
 
   /**
    * Ajoute un produit.
@@ -273,7 +260,7 @@ export class ProduitBusiness {
               resolve(response);
             } else {
               const produit = response['addProduit'];
-              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT,produit.noteMoyenne, [], []));
+              resolve(new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, produit.noteMoyenne, [], []));
             }
           }
         )
@@ -292,13 +279,13 @@ export class ProduitBusiness {
       'prixHT: ' + produit.prixHT + ', ' +
       'categories:[ ';
 
-    for( let categorie of produit.arrayCategorie) {
+    for (let categorie of produit.arrayCategorie) {
       requete += '{ idCategorie: ' + categorie.id + ', nomCategorie:"' + categorie.nomCat + '"},';
     }
     requete += '],';
     console.log(produit.photoPrincipale);
     if (produit.photoPrincipale !== undefined && produit.photoPrincipale.id !== 0) {
-      requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}'
+      requete += 'photoPrincipale: {idPhoto: ' + produit.photoPrincipale.id + '}';
     }
     requete +=
       '})' +
@@ -326,10 +313,10 @@ export class ProduitBusiness {
                 (photo) => new Photo(photo.id, environment.api_rest_download_url + photo.url, photo.nom)
               );
               const resolvedProduct = new Produit(produit.ref, produit.nom, produit.description, produit.prixHT, arrayCategorie, arrayPhoto);
-              if(produit.photoPrincipale != null && produit.photoPrincipale != undefined){
+              if (produit.photoPrincipale != null && produit.photoPrincipale != undefined) {
                 resolvedProduct.photoPrincipale = new Photo(produit.photoPrincipale.id, environment.api_rest_download_url + produit.photoPrincipale.url, produit.photoPrincipale.nom);
-              }else{
-                resolvedProduct.photoPrincipale = new Photo(0, "", "");
+              } else {
+                resolvedProduct.photoPrincipale = new Photo(0, '', '');
               }
               resolve(resolvedProduct);
             }
@@ -342,7 +329,7 @@ export class ProduitBusiness {
 
   public deleteProduit(produit: Produit): Promise<boolean> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation{deleteProduit(ref: "' + produit.ref + '")}'})
+    const postResult = this.http.post(environment.api_url, {query: 'mutation{deleteProduit(ref: "' + produit.ref + '")}'});
     // On créer une promesse
     const promise = new Promise<boolean>((resolve) => {
       postResult
@@ -368,7 +355,7 @@ export class ProduitBusiness {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {
       query: 'mutation{updateProduit(ref:"' + produit.ref + '",nouvelleCat: ' + categorie.id +
-      '){ref nom description prixHT categories{id nom} photos {url} }}'
+        '){ref nom description prixHT categories{id nom} photos {url} }}'
     });
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
@@ -460,6 +447,16 @@ export class ProduitBusiness {
         .catch(this.handleError);
     });
     return promise;
+  }
+
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
+  private handleError(error: Response | any) {
+    console.error('ApiService::handleError', error);
+    return observableThrowError(error);
   }
 }
 

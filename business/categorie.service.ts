@@ -1,11 +1,10 @@
-
-import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import {Observable, throwError as observableThrowError} from 'rxjs';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 
-import { Categorie } from '../models/Categorie';
-import { environment } from '../../src/environments/environment';
-import {Pagination} from "../models/Pagination";
+import {Categorie} from '../models/Categorie';
+import {environment} from '../../src/environments/environment';
+import {Pagination} from '../models/Pagination';
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -14,16 +13,7 @@ import {Pagination} from "../models/Pagination";
 @Injectable()
 export class CategorieBusinessService {
   constructor(
-    private http: HttpClient) { }
-
-  /**
-   * Retourne une erreur si le business n'a pas pu exécuter le post
-   * @param {Response | any} error Erreur à afficher ou rien
-   * @returns {ErrorObservable} Un observable contenant l'erreur
-   */
-  private handleError (error: HttpErrorResponse | any) {
-    console.error('Categorie Business::handleError', error);
-    return observableThrowError(error);
+    private http: HttpClient) {
   }
 
   /**
@@ -32,7 +22,7 @@ export class CategorieBusinessService {
    */
   public getAllCategories(): Promise<Categorie[]> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin{id nom level} } }' });
+    const postResult = this.http.post(environment.api_url, {query: '{ categories { id nom level chemin{id nom level} } }'});
     // On créer une promesse
     const promise = new Promise<Categorie[]>((resolve) => {
       postResult
@@ -44,7 +34,7 @@ export class CategorieBusinessService {
             // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
             if (categories !== undefined) {
               // On résout notre promesse
-              resolve(categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
+              resolve(categories.map((cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
             }
           }
         )
@@ -60,18 +50,18 @@ export class CategorieBusinessService {
    */
   public getCategorieByID(id: number): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: '{ categories(id: '+id+'){ id nom level chemin } }' });
+    const postResult = this.http.post(environment.api_url, {query: '{ categories(id: ' + id + '){ id nom level chemin } }'});
     // On créer une promesse
     let promise = new Promise((resolve, reject) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             let retour;
-            if(response['categories'] == undefined){
+            if (response['categories'] == undefined) {
               retour = response[0].message;
-            }else{
+            } else {
               const categorie = response['categories'][0];
               retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             }
@@ -92,17 +82,19 @@ export class CategorieBusinessService {
    */
   public getCategorieByPagination(page: number, nombreDeCategorie: number): Promise<Pagination> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: '{ pagination(type: "categorie", page: ' + page + ', npp: ' + nombreDeCategorie +
-      ') { pageActuelle pageMin pageMax total categories { id nom level chemin  } } }'});
+    const postResult = this.http.post(environment.api_url, {
+      query: '{ pagination(type: "categorie", page: ' + page + ', npp: ' + nombreDeCategorie +
+        ') { pageActuelle pageMin pageMax total categories { id nom level chemin  } } }'
+    });
     // On créer une promesse
     let promise = new Promise<Pagination>((resolve) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             const pagination = response['pagination'];
-            let array =  pagination.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
+            let array = pagination.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
             // On résout notre promesse
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
           }
@@ -121,18 +113,18 @@ export class CategorieBusinessService {
   public getDetails(categorie: Categorie): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url,
-      { query: '{ categories(nom: "' + categorie.nomCat + '") { id nom level chemin sousCategories { id nom level } parent { id nom level}}}'});
+      {query: '{ categories(nom: "' + categorie.nomCat + '") { id nom level chemin sousCategories { id nom level } parent { id nom level}}}'});
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             let retour;
-            if(response['categories'] == undefined){
+            if (response['categories'] == undefined) {
               retour = response[0].message;
-            }else{
+            } else {
               let temp = {};
               temp['parent'] = response['categories'][0]['parent'];
               temp['sousCategories'] = response['categories'][0]['sousCategories'];
@@ -154,18 +146,18 @@ export class CategorieBusinessService {
    */
   public ajouterCategorieParent(nomCategorie: string): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'});
+    const postResult = this.http.post(environment.api_url, {query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'});
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             let retour;
-            if(response['addCategorieParent'] == undefined){
+            if (response['addCategorieParent'] == undefined) {
               retour = response[0].message;
-            }else{
+            } else {
               const categorie = response['addCategorieParent'];
               retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             }
@@ -185,17 +177,19 @@ export class CategorieBusinessService {
    * @returns {Promise<any>} Une promesse contenant un message d'erreur du back-end ou un objet catégorie.
    */
   public ajouterCategorieEnfant(nomCategorie: string, idPere: number): Promise<any> {
-    const postResult = this.http.post(environment.api_url, { query: 'mutation { addCategorieEnfant(nom: "'
-      + nomCategorie + '", pere: ' + idPere + ') { id nom level }}'});
+    const postResult = this.http.post(environment.api_url, {
+      query: 'mutation { addCategorieEnfant(nom: "'
+        + nomCategorie + '", pere: ' + idPere + ') { id nom level }}'
+    });
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
         .toPromise()
         .then(
-          response =>{
+          response => {
             let retour;
-            if(response['addCategorieEnfant'] === undefined){
+            if (response['addCategorieEnfant'] === undefined) {
               retour = response[0].message;
             } else {
               const categorie = response['addCategorieEnfant'];
@@ -217,14 +211,14 @@ export class CategorieBusinessService {
    */
   public supprimerCategorie(categorie: Categorie): Promise<boolean> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: 'mutation { deleteCategorie(id: ' + categorie.id + ')}'});
+    const postResult = this.http.post(environment.api_url, {query: 'mutation { deleteCategorie(id: ' + categorie.id + ')}'});
     // On créer une promesse
     let promise = new Promise<boolean>((resolve) => {
       postResult
       // On transforme en promesse
         .toPromise()
         .then(
-          response =>{
+          response => {
             // On résout notre promesse
             resolve(response['deleteCategorie']);
           }
@@ -296,18 +290,18 @@ export class CategorieBusinessService {
 
   public updateCategorie(id: number, nouveauNom: string): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, { query: 'mutation { updateCategorie(id: '+id+', nom:"'+nouveauNom+'"){ id nom level }}'});
+    const postResult = this.http.post(environment.api_url, {query: 'mutation { updateCategorie(id: ' + id + ', nom:"' + nouveauNom + '"){ id nom level }}'});
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promesse
         .toPromise()
         .then(
-          response =>{
+          response => {
             let retour;
-            if(response['updateCategorie'] == undefined){
+            if (response['updateCategorie'] == undefined) {
               retour = response[0].message;
-            }else{
+            } else {
               const categorie = response['updateCategorie'];
               retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             }
@@ -318,6 +312,16 @@ export class CategorieBusinessService {
         .catch(this.handleError);
     });
     return promise;
+  }
+
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
+  private handleError(error: HttpErrorResponse | any) {
+    console.error('Categorie Business::handleError', error);
+    return observableThrowError(error);
   }
 }
 

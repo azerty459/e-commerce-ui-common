@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import { environment } from '../../../src/environments/environment';
+import {environment} from '../../../src/environments/environment';
 import {throwError as observableThrowError} from 'rxjs/index';
 import {Produit} from '../../models/Produit';
-import {Utilisateur} from '../../models/Utilisateur';
 import {Role} from '../../models/Role';
 
 /**
@@ -17,16 +16,6 @@ import {Role} from '../../models/Role';
 export class RoleDataService {
 
   constructor(private http: HttpClient) {
-  }
-
-  /**
-   * Retourne une erreur si le business n'a pas pu exécuter le post
-   * @param {Response | any} error Erreur à afficher ou rien
-   * @returns {ErrorObservable} Un observable contenant l'erreur
-   */
-  private handleError(error: Response | any) {
-    console.error('ApiService::handleError', error);
-    return observableThrowError(error);
   }
 
   /**
@@ -52,5 +41,15 @@ export class RoleDataService {
         .catch(this.handleError);
     });
     return promise;
+  }
+
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
+  private handleError(error: Response | any) {
+    console.error('ApiService::handleError', error);
+    return observableThrowError(error);
   }
 }

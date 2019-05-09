@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/index';
+import {BehaviorSubject, Observable, of as observableOf} from 'rxjs/index';
 import {CategorieNode} from '../models/CategorieNode';
 import {CategorieBusinessService} from './categorie.service';
 import {CategorieFlatNode} from '../models/CategorieFlatNode';
-import {Observable, of as observableOf} from 'rxjs/index';
 import {CategoriedataService} from './data/categoriedata.service';
 
 /**
@@ -25,6 +24,20 @@ export class ArbreService {
   flatNodeMap: Map<CategorieFlatNode, CategorieNode> = new Map<CategorieFlatNode, CategorieNode>();
   /** Map de nested node vers flat node, elle nous permet de touver la flat node a modifier*/
   nestedNodeMap: Map<CategorieNode, CategorieFlatNode> = new Map<CategorieNode, CategorieFlatNode>();
+
+  constructor(public categorieBusiness: CategorieBusinessService, public categoriedataBusiness: CategoriedataService) {
+    this.initialize();
+  }
+
+  /**
+   * Permet d'obtenir les données de l'arbre
+   * @returns {CategorieNode[]}
+   */
+  get data(): CategorieNode[] {
+    this.sortNodes(this.dataChange.value);
+    return this.dataChange.value;
+  }
+
   /**
    * Transforme une Node en FlatNode, rajoute l'information du niveau et de la capacité de la node a s'étendre ou non
    * @param {CategorieNode} node à transformer
@@ -57,6 +70,7 @@ export class ArbreService {
     return flatNode;
 
   };
+
   /**
    * Permet d'obtenir le niveau d'un CategorieFlatNode
    * @return {number} le niveau
@@ -65,6 +79,7 @@ export class ArbreService {
   public getLevel = (node: CategorieFlatNode) => {
     return node.level;
   };
+
   /**
    * Permet de savoir si un FlatNode est extensible
    * @param {CategorieFlatNode} node
@@ -73,6 +88,7 @@ export class ArbreService {
   public isExpandable = (node: CategorieFlatNode) => {
     return node.expandable;
   };
+
   /**
    * Permet d'obtenir les enfants d'une Node
    * @param {CategorieNode} node
@@ -83,18 +99,6 @@ export class ArbreService {
     return observableOf(node.children);
   };
 
-  constructor(public categorieBusiness: CategorieBusinessService, public categoriedataBusiness: CategoriedataService) {
-    this.initialize();
-  }
-
-  /**
-   * Permet d'obtenir les données de l'arbre
-   * @returns {CategorieNode[]}
-   */
-  get data(): CategorieNode[] {
-    this.sortNodes(this.dataChange.value);
-    return this.dataChange.value;
-  }
   public sortNodes(categorieNodes: CategorieNode[]) {
     this.sortArrayNode(categorieNodes);
     for (const categorie of categorieNodes) {
@@ -109,7 +113,7 @@ export class ArbreService {
       for (let ind02 = ind01 + 1; ind02 < categorieNodes.length; ind02++) {
         const nodeNotUndefined = categorieNodes[ind01] !== undefined && categorieNodes[ind02] !== undefined;
         const nomCategorieNotUndefined = categorieNodes[ind01].nomCategorie[0] !== undefined && categorieNodes[ind02].nomCategorie[0] !== undefined;
-        if ( nodeNotUndefined && nomCategorieNotUndefined && categorieNodes[ind01].nomCategorie[0].toUpperCase() > categorieNodes[ind02].nomCategorie[0].toUpperCase()) {
+        if (nodeNotUndefined && nomCategorieNotUndefined && categorieNodes[ind01].nomCategorie[0].toUpperCase() > categorieNodes[ind02].nomCategorie[0].toUpperCase()) {
           const temp = categorieNodes[ind01];
           categorieNodes[ind01] = categorieNodes[ind02];
           categorieNodes[ind02] = temp;
@@ -137,6 +141,7 @@ export class ArbreService {
 
     }
   }
+
   /**
    * Permet de construire la structure de l'arbre
    * @param value objet Json
@@ -176,27 +181,28 @@ export class ArbreService {
   public deleteChild(nodeParent: CategorieNode, nodeToDelete: CategorieNode) {
     for (const i in nodeParent.children) {
       if (nodeParent.children[i].id === nodeToDelete.id) {
-        nodeParent.children.splice(parseInt(i, 10 ), 1 );
+        nodeParent.children.splice(parseInt(i, 10), 1);
       }
     }
-    if (nodeParent.children.length === 0 ) {
+    if (nodeParent.children.length === 0) {
       nodeParent.children = undefined;
     }
     this.dataChange.next(this.data);
   }
+
   /** Ajoute une nouvelle categorie vide à l'arbre
    * @param {CategorieNode} parent le parent de la catégorie à inserer
    * @param {string} nodeToInsert la node a inserer
    */
   insertItem(parent: CategorieNode, nodeToInsert: CategorieNode) {
     // un parent null signifie qu'on souhaite une categorie de level 0
-    if (parent === null || parent === undefined ) {
+    if (parent === null || parent === undefined) {
       this.data.push(nodeToInsert);
       this.dataChange.next(this.data);
     } else {
       nodeToInsert.idParent = parent.id;
       const child = nodeToInsert;
-      if ( parent.children === undefined) {
+      if (parent.children === undefined) {
         parent.children = new Array<CategorieNode>();
       }
       parent.children.push(child);
@@ -235,8 +241,8 @@ export class ArbreService {
           return true;
         }
         if (node.children[index].children !== undefined && nodeParent !== undefined) {
-          const childNotContainNode =  !this.nodeContain(node.children[index], nodeParent);
-          if ( childNotContainNode === false) {
+          const childNotContainNode = !this.nodeContain(node.children[index], nodeParent);
+          if (childNotContainNode === false) {
             return true;
           }
         }
@@ -248,7 +254,7 @@ export class ArbreService {
   /**
    * Methode permettant la restauration de la dernière node supprimé
    */
-  public  async restoreLastDeletedNode() {
+  public async restoreLastDeletedNode() {
     const response = await this.categoriedataBusiness.restoreLastDeletedCategorie();
     console.log(this.lastDeletedParentnode);
     this.insertItem(this.lastDeletedParentnode, this.buildFileTree(response.categories, 0)[0]);

@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import { environment } from '../../../src/environments/environment';
+import {environment} from '../../../src/environments/environment';
 import {throwError as observableThrowError} from 'rxjs/index';
 import {Produit} from '../../models/Produit';
 import {Utilisateur} from '../../models/Utilisateur';
@@ -19,16 +19,6 @@ export class UtilisateurDataService {
   constructor(private http: HttpClient) {
   }
 
-  /**
-   * Retourne une erreur si le business n'a pas pu exécuter le post
-   * @param {Response | any} error Erreur à afficher ou rien
-   * @returns {ErrorObservable} Un observable contenant l'erreur
-   */
-  private handleError(error: Response | any) {
-    console.error('ApiService::handleError', error);
-    return observableThrowError(error);
-  }
-
   public getUtilisateurById(id: number): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {query: '{ utilisateurs(id: ' + id + ') { id email prenom nom role { nom } } }'});
@@ -45,7 +35,7 @@ export class UtilisateurDataService {
               resolve(response[0].message);
             } else {
               console.log(response);
-              const utilisateur = response['utilisateurs'][0];     
+              const utilisateur = response['utilisateurs'][0];
               if (utilisateur.role !== null) {
                 const arrayRole = utilisateur.role.map(
                   (role) => new Role(role.id, role.nom)
@@ -53,7 +43,7 @@ export class UtilisateurDataService {
               }
               const user = new Utilisateur(utilisateur.id, utilisateur.email, utilisateur.prenom, utilisateur.nom,
                 '');
-              user.role = new Role(0,"");
+              user.role = new Role(0, '');
               resolve(user);
             }
           }
@@ -81,7 +71,7 @@ export class UtilisateurDataService {
     let requete = 'mutation{addUtilisateur(utilisateur: { ' +
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
-      'role: {nom:"'+ utilisateur.role.nom +'"}})'+
+      'role: {nom:"' + utilisateur.role.nom + '"}})' +
       '{nom prenom email role{id nom} }' +
       '}';
     console.log(requete);
@@ -103,7 +93,7 @@ export class UtilisateurDataService {
               );
               const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
                 retourUtilisateur.nom, retourUtilisateur.mdp);
-              user.role = new Role(0,"");
+              user.role = new Role(0, '');
               resolve(user);
             }
           }
@@ -146,7 +136,7 @@ export class UtilisateurDataService {
 
               const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
                 retourUtilisateur.nom, retourUtilisateur.mdp);
-              user.role = new Role(0,"");
+              user.role = new Role(0, '');
               resolve(user);
             }
           }
@@ -158,7 +148,7 @@ export class UtilisateurDataService {
 
   public deleteUtilisateur(utilisateur: Utilisateur): Promise<boolean> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation{deleteUtilisateur(email: "' + utilisateur.email + '")}'})
+    const postResult = this.http.post(environment.api_url, {query: 'mutation{deleteUtilisateur(email: "' + utilisateur.email + '")}'});
     // On créer une promesse
     const promise = new Promise<boolean>((resolve) => {
       postResult
@@ -172,5 +162,15 @@ export class UtilisateurDataService {
         .catch(this.handleError);
     });
     return promise;
+  }
+
+  /**
+   * Retourne une erreur si le business n'a pas pu exécuter le post
+   * @param {Response | any} error Erreur à afficher ou rien
+   * @returns {ErrorObservable} Un observable contenant l'erreur
+   */
+  private handleError(error: Response | any) {
+    console.error('ApiService::handleError', error);
+    return observableThrowError(error);
   }
 }

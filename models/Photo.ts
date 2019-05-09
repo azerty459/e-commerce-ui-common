@@ -1,5 +1,8 @@
-
 export class Photo {
+  public file;
+  public imgHeight;
+  public imgWidth;
+
   constructor(
     /**
      * URL de la photo
@@ -10,8 +13,6 @@ export class Photo {
      * Nom d'origine du fichier uploadé
      */
     public nom: string
-  ) {}
-  public file;
-  public imgHeight;
-  public imgWidth;
+  ) {
+  }
 }

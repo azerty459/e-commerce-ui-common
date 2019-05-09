@@ -1,20 +1,17 @@
-import { Injectable } from '@angular/core';
-import { Categorie} from '../../models/Categorie';
+import {Injectable} from '@angular/core';
+import {Categorie} from '../../models/Categorie';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import { environment } from '../../../src/environments/environment';
-import {throwError as observableThrowError } from 'rxjs';
+import {environment} from '../../../src/environments/environment';
+import {throwError as observableThrowError} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoriedataService {
   public idLastDeletedCategorie: number;
-  constructor(private http: HttpClient) { }
-  private handleError (error: HttpErrorResponse | any) {
-    console.error('Categorie Business::handleError', error);
-    return observableThrowError(error);
-  }
 
+  constructor(private http: HttpClient) {
+  }
 
   /**
    * Prend une catégorie en paramètre et retourne la même mais avec le champs "chemin" renseigné
@@ -24,24 +21,25 @@ export class CategoriedataService {
   public getChemin(): Promise<any> {
 
     // Récupérer toutes les catégories
-    const postResult = this.http.post(environment.api_url, { query: '{ categories { id nom level chemin{id nom level} } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ categories { id nom level chemin{id nom level} } }'});
 
     // fabrication de la promesse
-    const promise = new Promise<any>( (resolve, reject) => {
+    const promise = new Promise<any>((resolve, reject) => {
 
-      postResult.toPromise().then( (response) => {
-        const categories = response['categories'];
-        // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
-        if (categories !== undefined) {
-          // On résout notre promesse
-          resolve(categories.map( (cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
-        }
+      postResult.toPromise().then((response) => {
+          const categories = response['categories'];
+          // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
+          if (categories !== undefined) {
+            // On résout notre promesse
+            resolve(categories.map((cat) => new Categorie(cat.id, cat.nom, cat.level, cat.chemin)));
+          }
         }
       );
     });
 
     return promise;
   }
+
   public moveCategorie(categorieParent: Categorie, categorieEnfant: Categorie) {
     // On récupère l'objet Observable retourné par la requête post
     if (categorieEnfant === undefined) {
@@ -57,11 +55,11 @@ export class CategoriedataService {
         .toPromise()
         .then(
           response => {
-           console.log(response);
+            console.log(response);
             // On résout notre promesse
             resolve(null);
           }
-        )
+        );
     });
     return promise;
   }
@@ -71,7 +69,7 @@ export class CategoriedataService {
    * @returns {Promise<any>} true si succès false si echec
    */
   public async restoreLastDeletedCategorie(): Promise<any> {
-    if (this.idLastDeletedCategorie === undefined){
+    if (this.idLastDeletedCategorie === undefined) {
       this.idLastDeletedCategorie = 0;
     }
     // On récupère l'objet Observable retourné par la requête post
@@ -130,6 +128,10 @@ export class CategoriedataService {
     }
   }
 
+  private handleError(error: HttpErrorResponse | any) {
+    console.error('Categorie Business::handleError', error);
+    return observableThrowError(error);
+  }
 
 
 }

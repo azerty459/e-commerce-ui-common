@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RetourComponent } from './retour.component';
+import {RetourComponent} from './retour.component';
 
 describe('RetourComponent', () => {
   let component: RetourComponent;
@@ -8,9 +8,9 @@ describe('RetourComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RetourComponent ]
-    })
-    .compileComponents();
+        declarations: [RetourComponent]
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {

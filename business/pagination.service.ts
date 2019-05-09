@@ -1,14 +1,7 @@
-
-import {throwError as observableThrowError,  Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-
-import { Categorie } from '../models/Categorie';
-import { environment } from '../../src/environments/environment';
-import {Pagination} from "../models/Pagination";
-import {UtilisateurDataService} from "./data/utilisateur-data.service";
-import {PaginationDataService} from "./data/pagination-data.service";
-import {Router} from "@angular/router";
+import {Injectable} from '@angular/core';
+import {Pagination} from '../models/Pagination';
+import {PaginationDataService} from './data/pagination-data.service';
+import {Router} from '@angular/router';
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -23,7 +16,7 @@ export class PaginationService {
     private router: Router,
     private pageData: PaginationDataService
   ) {
-    this.page = new Pagination(0, 0 , 0, 0);
+    this.page = new Pagination(0, 0, 0, 0);
   }
 
   public async paginationUtilisateur(page: number, nombreUtilisateur: number) {
@@ -47,7 +40,7 @@ export class PaginationService {
   }
 
   public getArray(): Array<any> {
-    return this.page.tableau ;
+    return this.page.tableau;
   }
 
   public getMaxPage(): number {

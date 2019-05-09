@@ -1,6 +1,6 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
-import { BreadcrumbsService } from './breadcrumbs.service';
+import {BreadcrumbsService} from './breadcrumbs.service';
 
 describe('BreadcrumbsService', () => {
   beforeEach(() => {

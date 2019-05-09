@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
-import { Location } from '@angular/common';
-import {PreviousRouteBusiness} from "../../business/previous-route.service";
-import {Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {Location} from '@angular/common';
+import {PreviousRouteBusiness} from '../../business/previous-route.service';
+import {Router} from '@angular/router';
+
 @Component({
   selector: 'app-retour',
   templateUrl: './retour.component.html',
@@ -12,25 +13,23 @@ export class RetourComponent implements OnInit {
 
   constructor(
     private location: Location,
-    private previousRouteBusiness : PreviousRouteBusiness,
+    private previousRouteBusiness: PreviousRouteBusiness,
     private router: Router
   ) {
   }
 
   ngOnInit() {
-    this.urlPrecedente=this.previousRouteBusiness.getPreviousUrl();
+    this.urlPrecedente = this.previousRouteBusiness.getPreviousUrl();
   }
-
 
 
   goBack(): void {
-    if(this.urlPrecedente !== '/'){
+    if (this.urlPrecedente !== '/') {
       this.previousRouteBusiness.retour = true;
       this.router.navigateByUrl(this.previousRouteBusiness.getPreviousUrl());
-    }
-    else{
+    } else {
       this.router.navigate(['/']);
     }
   }
-  
+
 }

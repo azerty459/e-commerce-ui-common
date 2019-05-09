@@ -2,8 +2,9 @@
  * Permet de creer des messages d'alerte
  */
 export class MessageAlerte {
-  constructor(
-  ) {}
+  constructor() {
+  }
+
   private _message: string;
 
   get message(): string {

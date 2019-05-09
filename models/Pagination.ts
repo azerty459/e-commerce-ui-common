@@ -4,6 +4,7 @@ export class Pagination {
     public pageMin: number,
     public pageMax: number,
     public total: number,
-    public tableau= [],
-  ) {}
+    public tableau = [],
+  ) {
+  }
 }

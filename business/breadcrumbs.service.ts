@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Produit} from '../models/Produit';
+import {Injectable} from '@angular/core';
+import {Produit} from '../models/Produit';
 import {Categorie} from '../models/Categorie';
 
 @Injectable({
@@ -7,7 +7,9 @@ import {Categorie} from '../models/Categorie';
 })
 export class BreadcrumbsService {
   public allCategories;
-  constructor() { }
+
+  constructor() {
+  }
 
   /**
    * Prend toutes les catégories d'un produit et renvoie celle avec l'id la plus petite
@@ -20,7 +22,7 @@ export class BreadcrumbsService {
     const listecategories = produit.arrayCategorie;
 
     // Si le produit n'a pas de catégories
-    if(listecategories.length === 0) {
+    if (listecategories.length === 0) {
       return undefined;
     }
 
@@ -28,15 +30,16 @@ export class BreadcrumbsService {
     let cat = listecategories[0];
     let idmin = cat.id;
     listecategories.forEach((c) => {
-        if(c.id < idmin) {
-          cat = c;
-          idmin = c.id;
-        }
+      if (c.id < idmin) {
+        cat = c;
+        idmin = c.id;
+      }
     });
 
     return cat;
   }
-  getBreadCumbForSearch(categorieSearched: String){
+
+  getBreadCumbForSearch(categorieSearched: String) {
 
   }
 }

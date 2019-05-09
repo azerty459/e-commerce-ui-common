@@ -5,7 +5,8 @@ export class FormEditService {
 
   private _dirty = false;
 
-  constructor() {}
+  constructor() {
+  }
 
   public isDirty(): boolean {
     return this._dirty;

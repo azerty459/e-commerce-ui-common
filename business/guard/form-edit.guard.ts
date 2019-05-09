@@ -1,15 +1,16 @@
-import {CanDeactivate} from "@angular/router";
-import {FormEditService} from "../form-edit.service";
-import {Injectable} from "@angular/core";
-import {Modal} from "ngx-modialog/plugins/bootstrap";
+import {CanDeactivate} from '@angular/router';
+import {FormEditService} from '../form-edit.service';
+import {Injectable} from '@angular/core';
+import {Modal} from 'ngx-modialog/plugins/bootstrap';
 
 @Injectable()
-export class FormEditGuard implements CanDeactivate<any>{
+export class FormEditGuard implements CanDeactivate<any> {
 
-  constructor(private formEditService: FormEditService, private modal: Modal){}
+  constructor(private formEditService: FormEditService, private modal: Modal) {
+  }
 
   async canDeactivate() {
-    if(!this.formEditService.isDirty()){
+    if (!this.formEditService.isDirty()) {
       return true;
     }
     const dialogRef = this.modal.confirm()
@@ -25,7 +26,7 @@ export class FormEditGuard implements CanDeactivate<any>{
       .open();
 
     let choix = dialogRef.result
-      .then( () => {
+      .then(() => {
         return true;
       })
       .catch(() => {

@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ProduitBusiness} from "./produit.service";
+import {ProduitBusiness} from './produit.service';
 
 describe('ProduitBusinessTest', () => {
   let component: ProduitBusiness;
@@ -8,9 +8,9 @@ describe('ProduitBusinessTest', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ProduitBusiness ]
-    })
-    .compileComponents();
+        declarations: [ProduitBusiness]
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -23,12 +23,12 @@ describe('ProduitBusinessTest', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get getProduit()', () =>{
+  it('should get getProduit()', () => {
     const result = component.getProduit();
-   // expect(result.subscribe(async(value) => expect(value.length).toBeGreaterThan(0)));
+    // expect(result.subscribe(async(value) => expect(value.length).toBeGreaterThan(0)));
   });
 
-  it('should get getProduitByPagination()', () =>{
+  it('should get getProduitByPagination()', () => {
     const result = component.getProduitByPagination(0, 5);
     //expect(result.subscribe(async(value) => expect(value.length).toBeGreaterThan(0)));
   });
