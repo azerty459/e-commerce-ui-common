@@ -1,7 +1,7 @@
-import {Injectable} from "@angular/core";
-import {Pagination} from "../models/Pagination";
-import {PaginationDataService} from "./data/pagination-data.service";
-import {Router} from "@angular/router";
+import {Injectable} from '@angular/core';
+import {Pagination} from '../models/Pagination';
+import {PaginationDataService} from './data/pagination-data.service';
+import {Router} from '@angular/router';
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.

@@ -1,4 +1,4 @@
-import {Utilisateur} from "./Utilisateur";
+import {Utilisateur} from './Utilisateur';
 
 export class Token {
   constructor(

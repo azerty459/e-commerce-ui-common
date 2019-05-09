@@ -1,11 +1,11 @@
-import {throwError as observableThrowError} from "rxjs";
-import {Produit} from "../models/Produit";
-import {Injectable} from "@angular/core";
-import {environment} from "../../src/environments/environment";
-import {HttpClient} from "@angular/common/http";
-import "rxjs/add/observable/of";
-import {Avis} from "../models/Avis";
-import "rxjs/add/operator/map";
+import {throwError as observableThrowError} from 'rxjs';
+import {Produit} from '../models/Produit';
+import {Injectable} from '@angular/core';
+import {environment} from '../../src/environments/environment';
+import {HttpClient} from '@angular/common/http';
+import 'rxjs/add/observable/of';
+import {Avis} from '../models/Avis';
+import 'rxjs/add/operator/map';
 
 
 /**
@@ -22,8 +22,8 @@ export class AvisService {
   public ajoutAvis(avis: Avis): Promise<Produit> {
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {
-      query: "mutation{addAvisClient(avis:{note:" + avis.note
-        + ",refProduit:\"" + avis.refProduit + "\",description:\"" + avis.description + "\"}){id description note}}"
+      query: 'mutation{addAvisClient(avis:{note:' + avis.note
+        + ',refProduit:"' + avis.refProduit + '",description:"' + avis.description + '"}){id description note}}'
     });
     // On créer une promesse
     const promise = new Promise<Produit>((resolve) => {
@@ -33,7 +33,7 @@ export class AvisService {
         .then(
           response => {
             // On résout notre promesse
-            resolve(response["addAvisClients"]);
+            resolve(response['addAvisClients']);
           }
         )
         .catch(this.handleError);
@@ -43,7 +43,7 @@ export class AvisService {
 
   public getAvis(produit: Produit): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: "{ avisClient(ref: \"" + produit.ref + "\") {id description note } }"});
+    const postResult = this.http.post(environment.api_url, {query: '{ avisClient(ref: "' + produit.ref + '") {id description note } }'});
     // On créer une promesse
     const promise = new Promise<Produit>((resolve) => {
       postResult
@@ -51,8 +51,8 @@ export class AvisService {
         .toPromise()
         .then(
           response => {
-            console.log(response["avisClient"]);
-            const avis = response["avisClient"];
+            console.log(response['avisClient']);
+            const avis = response['avisClient'];
             // On résout notre promesse
             const arrayAvis = avis.map(
               (avis) => new Avis(avis.id, avis.description, avis.note, null, produit.ref)
@@ -72,7 +72,7 @@ export class AvisService {
    * @returns {ErrorObservable} Un observable contenant l'erreur
    */
   private handleError(error: Response | any) {
-    console.error("ApiService::handleError", error);
+    console.error('ApiService::handleError', error);
     return observableThrowError(error);
   }
 }

@@ -1,4 +1,4 @@
-import {Produit} from "./Produit";
+import {Produit} from './Produit';
 
 export class Produits {
   constructor(

@@ -1,9 +1,9 @@
-import {throwError as observableThrowError} from "rxjs";
-import {Injectable} from "@angular/core";
-import {environment} from "../../src/environments/environment";
-import {HttpClient} from "@angular/common/http";
-import "rxjs/add/observable/of";
-import {Statistique} from "../models/Statistique";
+import {throwError as observableThrowError} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {environment} from '../../src/environments/environment';
+import {HttpClient} from '@angular/common/http';
+import 'rxjs/add/observable/of';
+import {Statistique} from '../models/Statistique';
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet statistique.
@@ -48,7 +48,7 @@ export class StatistiqueBusiness {
 
     // Méthode que tu attendais (je pense)
 
-    const postResult = this.http.post(environment.api_url, {query: "{nbProduit nbUtilisateur nbCategorie nbProduitCategorie {categorie nb} }"});
+    const postResult = this.http.post(environment.api_url, {query: '{nbProduit nbUtilisateur nbCategorie nbProduitCategorie {categorie nb} }'});
     let statistique: any;
 
     await postResult.toPromise().then(
@@ -72,7 +72,7 @@ export class StatistiqueBusiness {
    * @returns {ErrorObservable} Un observable contenant l'erreur
    */
   private handleError(error: Response | any) {
-    console.error("ApiService::handleError", error);
+    console.error('ApiService::handleError', error);
     return observableThrowError(error);
   }
 }

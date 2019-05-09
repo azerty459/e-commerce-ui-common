@@ -1,11 +1,11 @@
-import {Injectable} from "@angular/core";
-import {Categorie} from "../../models/Categorie";
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
-import {environment} from "../../../src/environments/environment";
-import {throwError as observableThrowError} from "rxjs";
+import {Injectable} from '@angular/core';
+import {Categorie} from '../../models/Categorie';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {environment} from '../../../src/environments/environment';
+import {throwError as observableThrowError} from 'rxjs';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class CategoriedataService {
   public idLastDeletedCategorie: number;
@@ -21,13 +21,13 @@ export class CategoriedataService {
   public getChemin(): Promise<any> {
 
     // Récupérer toutes les catégories
-    const postResult = this.http.post(environment.api_url, {query: "{ categories { id nom level chemin{id nom level} } }"});
+    const postResult = this.http.post(environment.api_url, {query: '{ categories { id nom level chemin{id nom level} } }'});
 
     // fabrication de la promesse
     const promise = new Promise<any>((resolve, reject) => {
 
       postResult.toPromise().then((response) => {
-          const categories = response["categories"];
+          const categories = response['categories'];
           // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
           if (categories !== undefined) {
             // On résout notre promesse
@@ -43,10 +43,10 @@ export class CategoriedataService {
   public moveCategorie(categorieParent: Categorie, categorieEnfant: Categorie) {
     // On récupère l'objet Observable retourné par la requête post
     if (categorieEnfant === undefined) {
-      categorieEnfant = new Categorie(0, "", null, null);
+      categorieEnfant = new Categorie(0, '', null, null);
     }
     const postResult = this.http.post(environment.api_url, {
-      query: "mutation { moveCategorie(idADeplacer:" + categorieParent.id + ",idNouveauParent:" + categorieEnfant.id + ")}"
+      query: 'mutation { moveCategorie(idADeplacer:' + categorieParent.id + ',idNouveauParent:' + categorieEnfant.id + ')}'
     });
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
@@ -74,7 +74,7 @@ export class CategoriedataService {
     }
     // On récupère l'objet Observable retourné par la requête post
     const postResult = this.http.post(environment.api_url, {
-      query: "mutation { restoreCategorie(idNouveauParent:" + this.idLastDeletedCategorie + "){id profondeur}}"
+      query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + '){id profondeur}}'
     });
     const promise = new Promise<any>((resolve) => {
       postResult
@@ -83,11 +83,11 @@ export class CategoriedataService {
         .then(
           response => {
             // On résout notre promesse
-            if (response["restoreCategorie"].length !== 0) {
-              resolve(response["restoreCategorie"][0]);
+            if (response['restoreCategorie'].length !== 0) {
+              resolve(response['restoreCategorie'][0]);
             } else {
               // Pas de categorie
-              console.log("pas de categorie");
+              console.log('pas de categorie');
               resolve([]);
             }
           }
@@ -101,14 +101,14 @@ export class CategoriedataService {
 
       //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
       //  profondeur.
-      let query = "{ categories(id:" + id + ") { nom id ";
+      let query = '{ categories(id:' + id + ') { nom id ';
       for (let i = 0; i < profondeur; i++) {
-        query += "sousCategories{ nom id ";
+        query += 'sousCategories{ nom id ';
       }
       for (let i = 0; i < profondeur; i++) {
-        query += "}";
+        query += '}';
       }
-      query += "}}";
+      query += '}}';
 
       // On execute cette requete
       const postResult = this.http.post(environment.api_url, {query: query});
@@ -129,7 +129,7 @@ export class CategoriedataService {
   }
 
   private handleError(error: HttpErrorResponse | any) {
-    console.error("Categorie Business::handleError", error);
+    console.error('Categorie Business::handleError', error);
     return observableThrowError(error);
   }
 

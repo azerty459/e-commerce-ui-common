@@ -1,10 +1,10 @@
-import {Injectable} from "@angular/core";
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 
-import {AuthDataService} from "../../src/business/auth-data.service";
-import {throwError} from "rxjs/internal/observable/throwError";
-import "rxjs/add/operator/catch";
-import {Observable} from "rxjs/Observable";
+import {AuthDataService} from '../../src/business/auth-data.service';
+import {throwError} from 'rxjs/internal/observable/throwError';
+import 'rxjs/add/operator/catch';
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
    * @returns {Observable<HttpEvent<any>>}
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    let authToken = "";
+    let authToken = '';
     if (this.auth.token.token !== undefined) {
       authToken = this.auth.token.token;
     }
@@ -27,7 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
     const authReq = req.clone({setHeaders: {Authorization: authToken}});
     return next.handle(authReq)
       .catch((error, caught) => {
-        console.log("une erreur est survenue");
+        console.log('une erreur est survenue');
         console.log(error);
         this.auth.logout();
         return throwError(error);

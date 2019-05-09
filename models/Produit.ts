@@ -1,6 +1,6 @@
-import {Categorie} from "./Categorie";
-import {Photo} from "./Photo";
-import {Avis} from "./Avis";
+import {Categorie} from './Categorie';
+import {Photo} from './Photo';
+import {Avis} from './Avis';
 
 export class Produit {
   public avis: [Avis];
@@ -13,7 +13,7 @@ export class Produit {
     public noteMoyenne: number,
     public arrayCategorie = new Array<Categorie>(),
     public arrayPhoto = new Array<Photo>(),
-    public photoPrincipale = new Photo(0, "", "")
+    public photoPrincipale = new Photo(0, '', '')
   ) {
   }
 }

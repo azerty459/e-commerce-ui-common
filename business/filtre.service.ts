@@ -1,5 +1,5 @@
-import {Injectable} from "@angular/core";
-import {Categorie} from "../models/Categorie";
+import {Injectable} from '@angular/core';
+import {Categorie} from '../models/Categorie';
 
 @Injectable()
 export class FiltreService {
@@ -12,11 +12,11 @@ export class FiltreService {
   }
 
   public saveNbProduitParPage(produitParPage: number) {
-    localStorage.setItem("filtreNbProduitParPage", "" + produitParPage);
+    localStorage.setItem('filtreNbProduitParPage', '' + produitParPage);
   }
 
   public getNbProduitParPage() {
-    const produitParPage = localStorage.getItem("filtreNbProduitParPage");
+    const produitParPage = localStorage.getItem('filtreNbProduitParPage');
     if (produitParPage === undefined || produitParPage === null) {
       return this.DEFAULT_PRODUIT_PAR_PAGE;
     } else {

@@ -1,5 +1,5 @@
-import {Injectable} from "@angular/core";
-import {NavigationEnd, Router} from "@angular/router";
+import {Injectable} from '@angular/core';
+import {NavigationEnd, Router} from '@angular/router';
 
 @Injectable()
 export class PreviousRouteBusiness {
@@ -12,7 +12,7 @@ export class PreviousRouteBusiness {
     this.currentUrl = this.router.url;
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        console.log("previous url ->" + this.currentUrl + " current url ->" + event.url);
+        console.log('previous url ->' + this.currentUrl + ' current url ->' + event.url);
         this.previousUrl = this.currentUrl;
         this.currentUrl = event.url;
 

@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {BehaviorSubject, Observable, of as observableOf} from "rxjs/index";
-import {CategorieNode} from "../models/CategorieNode";
-import {CategorieBusinessService} from "./categorie.service";
-import {CategorieFlatNode} from "../models/CategorieFlatNode";
-import {CategoriedataService} from "./data/categoriedata.service";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable, of as observableOf} from 'rxjs/index';
+import {CategorieNode} from '../models/CategorieNode';
+import {CategorieBusinessService} from './categorie.service';
+import {CategorieFlatNode} from '../models/CategorieFlatNode';
+import {CategoriedataService} from './data/categoriedata.service';
 
 /**
  * Service gérant les arbres. Il peut construire un arbre à partir d'un objet json strucuté.
@@ -236,7 +236,7 @@ export class ArbreService {
       for (const index in node.children) {
         console.log(node.children[index]);
         if (node.children[index].id === nodeParent.id) {
-          console.log("return true");
+          console.log('return true');
 
           return true;
         }

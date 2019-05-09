@@ -1,9 +1,9 @@
-import {Injectable} from "@angular/core";
-import {Produit} from "../models/Produit";
-import {Categorie} from "../models/Categorie";
+import {Injectable} from '@angular/core';
+import {Produit} from '../models/Produit';
+import {Categorie} from '../models/Categorie';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class BreadcrumbsService {
   public allCategories;

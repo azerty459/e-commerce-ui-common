@@ -1,8 +1,8 @@
-import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {RetourComponent} from "./retour.component";
+import {RetourComponent} from './retour.component';
 
-describe("RetourComponent", () => {
+describe('RetourComponent', () => {
   let component: RetourComponent;
   let fixture: ComponentFixture<RetourComponent>;
 
@@ -19,7 +19,7 @@ describe("RetourComponent", () => {
     fixture.detectChanges();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });
