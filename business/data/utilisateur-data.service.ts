@@ -72,7 +72,7 @@ export class UtilisateurDataService {
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
       'role: {nom:"' + utilisateur.role.nom + '"}})' +
-      '{nom prenom email role{id nom} }' +
+      '{ id nom prenom email role{id nom} }' +
       '}';
     console.log(requete);
     const postResult = this.http.post(environment.api_url, {query: requete});
@@ -106,14 +106,15 @@ export class UtilisateurDataService {
   public updateUtilisateur(utilisateur: Utilisateur): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
 
-    let requete = 'mutation{updateUtilisateur(utilisateur:: { ' +
+    console.log(utilisateur);
+    let requete = 'mutation{updateUtilisateur(utilisateur: { ' +
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
       'prenom: "' + utilisateur.prenom + '", ' +
       'nom: "' + utilisateur.nom + '", ' +
-      'role:"' + utilisateur.role + '"';
+      'role: {nom: "' + utilisateur.role.nom + '", id: ' + utilisateur.role.id + '}';
     requete += '})' +
-      '{nom prenom email role{id nom} }' +
+      '{ id nom prenom email role{id nom} }' +
       '}';
     console.log(requete);
     const postResult = this.http.post(environment.api_url, {
