@@ -21,7 +21,7 @@ export class UtilisateurDataService {
 
   public getUtilisateurById(id: number): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ utilisateurs(id: ' + id + ') { id email prenom nom role { nom } } }'});
+    const postResult = this.http.post(environment.api_url, {query: '{ utilisateurs(id: ' + id + ') { id email prenom nom role { id nom } } }'});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
       postResult
