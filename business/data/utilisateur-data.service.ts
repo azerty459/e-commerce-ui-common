@@ -108,6 +108,7 @@ export class UtilisateurDataService {
 
     console.log(utilisateur);
     let requete = 'mutation{updateUtilisateur(utilisateur: { ' +
+      'id: ' + utilisateur.id + ', ' +
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
       'prenom: "' + utilisateur.prenom + '", ' +
