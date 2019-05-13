@@ -85,9 +85,6 @@ export class UtilisateurDataService {
               resolve(response[0].message);
             } else {
               const retourUtilisateur = response['addUtilisateur'];
-              const arrayRole = retourUtilisateur.role.map(
-                (role) => new Role(role.id, role.nom)
-              );
               const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
                 retourUtilisateur.nom, retourUtilisateur.mdp);
               user.role = new Role(0, '');
@@ -128,10 +125,6 @@ export class UtilisateurDataService {
               resolve(response);
             } else {
               const retourUtilisateur = response['updateUtilisateur'];
-              const arrayRole = retourUtilisateur.role.map(
-                (role) => new Role(role.id, role.nom)
-              );
-
               const user = new Utilisateur(retourUtilisateur.id, retourUtilisateur.email, retourUtilisateur.prenom,
                 retourUtilisateur.nom, retourUtilisateur.mdp);
               user.role = new Role(0, '');
