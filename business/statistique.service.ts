@@ -17,53 +17,10 @@ export class StatistiqueBusiness {
   /*
    * @returns {Promise<Produit>} Le résultat de la recherche du produit.
    */
-  async getStatistique(): Promise<Statistique> {
-    // Méthode Inception
+  public getStatistique(): Promise<Statistique> {
 
-    // // On récupère l'objet Observable retourné par la requête post
-    // const postResult = this.http.post(environment.api_url, {query: '{nbProduit nbUtilisateur nbCategorie nbProduitCategorie {categorie nb} }'});
-    // // On créer une promesse
-    // const promise = new Promise<Statistique>((resolve) => {
-    //   postResult
-    //   // On transforme en promise
-    //     .toPromise()
-    //     .then(
-    //       response => {
-    //           console.log(response)
-    //         const statistique: any = response;
-
-    //         // On résout notre promesse
-    //         resolve(new Statistique(statistique.nbProduit, statistique.nbUtilisateur, statistique.nbCategorie, statistique.nbProduitCategorie));
-    //       }
-    //     )
-    //     .catch(this.handleError);
-    // });
-
-    // return postResult;
-
-    // Méthode assez efficace
-
-    // const postResult = this.http.post<Statistique>(environment.api_url, {query: '{nbProduit nbUtilisateur nbCategorie nbProduitCategorie {categorie nb} }'});
-    // return postResult.toPromise();
-
-    // Méthode que tu attendais (je pense)
-
-    const postResult = this.http.post(environment.api_url, {query: '{nbProduit nbUtilisateur nbCategorie nbProduitCategorie {categorie nb} }'});
-    let statistique: any;
-
-    await postResult.toPromise().then(
-      response => {
-        statistique = response;
-      },
-      error => {
-        console.log(error);
-      }).catch(this.handleError);
-
-    let promise = new Promise<Statistique>((resolve) => {
-      resolve(new Statistique(statistique.nbProduit, statistique.nbUtilisateur, statistique.nbCategorie, statistique.nbProduitCategorie));
-    });
-
-    return promise;
+    const postResult = this.http.post<Statistique>(environment.api_url, {query: '{nbProduit nbUtilisateur nbCategorie nbProduitCategorie {categorie nb} }'});
+    return postResult.toPromise();
   }
 
   /**
