@@ -70,10 +70,9 @@ export class UtilisateurDataService {
     let requete = 'mutation{addUtilisateur(utilisateur: { ' +
       'email: "' + utilisateur.email + '", ' +
       'mdp: "' + utilisateur.mdp + '", ' +
-      'role: {nom:"' + utilisateur.role.nom + '"}})' +
+      'role: {id: ' + utilisateur.role.id + '}})' +
       '{ id nom prenom email role{id nom} }' +
       '}';
-    console.log(requete);
     const postResult = this.http.post(environment.api_url, {query: requete});
     // On créer une promesse
     const promise = new Promise<any>((resolve) => {
@@ -82,7 +81,6 @@ export class UtilisateurDataService {
         .toPromise()
         .then(
           response => {
-            console.log(response);
             if (response['addUtilisateur'] === undefined) {
               resolve(response[0].message);
             } else {
@@ -112,11 +110,10 @@ export class UtilisateurDataService {
       'mdp: "' + utilisateur.mdp + '", ' +
       'prenom: "' + utilisateur.prenom + '", ' +
       'nom: "' + utilisateur.nom + '", ' +
-      'role: {nom: "' + utilisateur.role.nom + '", id: ' + utilisateur.role.id + '}';
+      'role: {id: ' + utilisateur.role.id + '}';
     requete += '})' +
       '{ id nom prenom email role{id nom} }' +
       '}';
-    console.log(requete);
     const postResult = this.http.post(environment.api_url, {
       query: requete
     });
