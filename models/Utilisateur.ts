@@ -1,5 +1,7 @@
+import {Role} from './Role';
+
 export class Utilisateur {
-  public role;
+  public role: Role;
 
   constructor(
     public id: number,
