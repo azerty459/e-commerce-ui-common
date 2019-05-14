@@ -27,9 +27,11 @@ export class AuthInterceptor implements HttpInterceptor {
     const authReq = req.clone({setHeaders: {Authorization: authToken}});
     return next.handle(authReq)
       .catch((error, caught) => {
-        console.log('une erreur est survenue');
-        console.log(error);
-        this.auth.logout();
+        if (error.status >= 500) {
+          console.log('une erreur est survenue');
+          console.log(error);
+          this.auth.logout();
+        }
         return throwError(error);
       }) as any;
   }
