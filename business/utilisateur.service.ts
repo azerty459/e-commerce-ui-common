@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {UtilisateurDataService} from './data/utilisateur-data.service';
 import {Utilisateur} from '../models/Utilisateur';
+import {UtilisateurDataService} from './data/utilisateur-data.service';
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet utilisateur.
@@ -10,6 +10,7 @@ import {Utilisateur} from '../models/Utilisateur';
 export class UtilisateurService {
 
   private utilisateur: Utilisateur;
+
 
   constructor(private utilisateurData: UtilisateurDataService) {
     this.utilisateur = new Utilisateur(null, null, null, null, null);

@@ -10,7 +10,7 @@ import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/observable/of';
 import {PaginationDataService} from './data/pagination-data.service';
 import {FiltreService} from './filtre.service';
-import {ProduiDataService} from './data/produitData.service';
+import {ProduiDataService} from './data/produit-data.service';
 
 
 /**
