@@ -99,8 +99,6 @@ export class UtilisateurDataService {
 
   public updateUtilisateur(utilisateur: Utilisateur): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-
-    console.log(utilisateur);
     let requete = 'mutation{updateUtilisateur(utilisateur: { ' +
       'id: ' + utilisateur.id + ', ' +
       'email: "' + utilisateur.email + '", ' +
