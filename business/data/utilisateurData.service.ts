@@ -20,7 +20,7 @@ export class UtilisateurData2Service {
   constructor(private http: HttpClient) {
   }
 
-  public getUtilisateurById(id: number): Promise<any> {
+  public getUtilisateurById(id: number): Promise<Utilisateur> {
 
     const url = `${environment.api_url2}/${id}`;
     return this.http.get<Utilisateur>(url).toPromise();
