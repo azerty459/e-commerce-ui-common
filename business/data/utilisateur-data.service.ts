@@ -25,7 +25,7 @@ export class UtilisateurDataService {
     return this.http.get<Utilisateur>(url).toPromise();
   }
 
-  public addUtilisateur(utilisateur: Utilisateur): Promise<any> {
+  public addUtilisateur(utilisateur: Utilisateur): Promise<Utilisateur> {
 
     if (utilisateur.prenom == null) {
       utilisateur.prenom = '';
@@ -39,7 +39,7 @@ export class UtilisateurDataService {
     return this.http.post<Utilisateur>(url, utilisateur, httpOptions).toPromise();
   }
 
-  public updateUtilisateur(utilisateur: Utilisateur): Promise<any> {
+  public updateUtilisateur(utilisateur: Utilisateur): Promise<Utilisateur> {
 
     const url = environment.api_url2;
     return this.http.put<Utilisateur>(url, utilisateur, httpOptions).toPromise();
