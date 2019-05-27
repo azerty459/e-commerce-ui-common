@@ -12,7 +12,7 @@ export function passwordStrengthValidator(control: AbstractControl): { [key: str
 /**
  * Validateur qui verifie que le mot de passe comporte au moins une minuscule, une majuscule, un chiffre,
  * un caractère speciale et que sa taille est de 8 caractères ou plus
- * Ou que le mot de passe est vide car il est optionelle
+ * Ou que le mot de passe est vide car il est optionel
  * @param control
  */
 export function passwordStrengthValidatorOptional(control: AbstractControl): { [key: string]: any } | null {
