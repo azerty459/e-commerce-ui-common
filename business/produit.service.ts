@@ -104,7 +104,7 @@ export class ProduitBusiness {
       page = 1;
     }
 
-    const url = `${environment.api_url_pagination}/type/produit/numPage/${page}/numberByPage/${nombreDeProduit}/nom/${text}/idCategorie/${categorieId}`;
+    const url = `${environment.api_url_pagination}/type/produit/numPage/${page}/numberByPage/${nombreDeProduit}/nom/${text}/idCategorie/${categorieId}/orderBy/Nom`;
     const postResult = this.http.get<Pagination>(url);
 
 
@@ -174,12 +174,12 @@ export class ProduitBusiness {
    * @param {number} nombreDeProduit Le nombre de produits voulu dans la page
    * @returns {Observable<Pagination>} Un observable contenant un objet pagination
    */
-  public getProduitByPagination(page: number, nombreDeProduit: number): Promise<Pagination> {
+  public getProduitByPagination(page: number, nombreDeProduit: number, nameOfTri: String): Promise<Pagination> {
 
     // Stockage des valeurs de la pagination
     this.nbProduits = nombreDeProduit;
 
-    const url = `${environment.api_url_pagination}/type/produit/numPage/${page}/numberByPage/${nombreDeProduit}`;
+    const url = `${environment.api_url_pagination}/type/produit/numPage/${page}/numberByPage/${nombreDeProduit}/orderBy/${nameOfTri}`;
     const postResult = this.http.get<any>(url);
 
     // On créer une promesse
