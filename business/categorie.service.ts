@@ -38,7 +38,7 @@ export class CategorieBusinessService {
         .toPromise()
         .then(
           response => {
-            const categories = response['categories'];
+            const categories = response;
             // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
             if (categories !== undefined) {
               // On résout notre promesse
@@ -89,11 +89,8 @@ export class CategorieBusinessService {
    * @returns {Observable<Pagination>} Un observable contenant un objet pagination
    */
   public getCategorieByPagination(page: number, nombreDeCategorie: number): Promise<Pagination> {
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {
-      query: '{ pagination(type: "categorie", page: ' + page + ', npp: ' + nombreDeCategorie +
-        ') { pageActuelle pageMin pageMax total categories { id nom level chemin  } } }'
-    });
+    const url = `${environment.api_url_pagination}/type/categorie/numPage/${page}/numberByPage/${nombreDeCategorie}`;
+    const postResult = this.http.get<any>(url);
     // On créer une promesse
     let promise = new Promise<Pagination>((resolve) => {
       postResult
@@ -101,7 +98,7 @@ export class CategorieBusinessService {
         .toPromise()
         .then(
           response => {
-            const pagination = response['pagination'];
+            const pagination = response;
             let array = pagination.categories.map((categorie) => new Categorie(categorie.id, categorie.nom, categorie.level, categorie.chemin));
             // On résout notre promesse
             resolve(new Pagination(pagination.pageActuelle, pagination.pageMin, pagination.pageMax, pagination.total, array));
@@ -153,8 +150,8 @@ export class CategorieBusinessService {
    * @returns {Observable<Categorie>} Un observable contenant un objet catégorie
    */
   public ajouterCategorieParent(nomCategorie: string): Promise<any> {
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation { addCategorieParent(nom: "' + nomCategorie + '") { id nom level }}'});
+    const url = `${environment.api_url_categorie}/nom/${nomCategorie}`;
+    const postResult = this.http.post<any>(url, httpOptions);
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
@@ -163,12 +160,8 @@ export class CategorieBusinessService {
         .then(
           response => {
             let retour;
-            if (response['addCategorieParent'] == undefined) {
-              retour = response[0].message;
-            } else {
-              const categorie = response['addCategorieParent'];
-              retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
-            }
+            const categorie = response;
+            retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             // On résout notre promesse
             resolve(retour);
           }
@@ -185,10 +178,8 @@ export class CategorieBusinessService {
    * @returns {Promise<any>} Une promesse contenant un message d'erreur du back-end ou un objet catégorie.
    */
   public ajouterCategorieEnfant(nomCategorie: string, idPere: number): Promise<any> {
-    const postResult = this.http.post(environment.api_url, {
-      query: 'mutation { addCategorieEnfant(nom: "'
-        + nomCategorie + '", pere: ' + idPere + ') { id nom level }}'
-    });
+    const url = `${environment.api_url_categorie}/nom/${nomCategorie}/idEnfant/${idPere}`;
+    const postResult = this.http.post<any>(url, httpOptions);
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
@@ -197,12 +188,8 @@ export class CategorieBusinessService {
         .then(
           response => {
             let retour;
-            if (response['addCategorieEnfant'] === undefined) {
-              retour = response[0].message;
-            } else {
-              const categorie = response['addCategorieEnfant'];
-              retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
-            }
+            const categorie = response;
+            retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             // On résout notre promesse
             resolve(retour);
           }
@@ -298,7 +285,7 @@ export class CategorieBusinessService {
   }
 
   public updateCategorie(id: number, nouveauNom: string): Promise<any> {
-    const url = `${environment.api_url_categorie}/idCategorie/${id}/nomCategorie/${nouveauNom}`;
+    const url = `${environment.api_url_categorie}/nom/${nouveauNom}/id/${id}`;
     const postResult = this.http.put<any>(url, httpOptions);
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
@@ -308,12 +295,8 @@ export class CategorieBusinessService {
         .then(
           response => {
             let retour;
-            if (response['updateCategorie'] == undefined) {
-              retour = response[0].message;
-            } else {
-              const categorie = response['updateCategorie'];
-              retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
-            }
+            const categorie = response;
+            retour = new Categorie(categorie.id, categorie.nom, categorie.level, null);
             // On résout notre promesse
             resolve(retour);
           }
