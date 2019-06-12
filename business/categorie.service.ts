@@ -1,10 +1,16 @@
 import {Observable, throwError as observableThrowError} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 
 import {Categorie} from '../models/Categorie';
 import {environment} from '../../src/environments/environment';
 import {Pagination} from '../models/Pagination';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+};
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet catégorie.
@@ -21,8 +27,10 @@ export class CategorieBusinessService {
    * @returns {Promise<Categorie[]>} Une promise qui renvoi un tableau de categorie
    */
   public getAllCategories(): Promise<Categorie[]> {
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ categories { id nom level chemin{id nom level} } }'});
+
+    const url = `${environment.api_url_categorie}/all`;
+    const postResult = this.http.get<any>(url);
+
     // On créer une promesse
     const promise = new Promise<Categorie[]>((resolve) => {
       postResult
@@ -49,8 +57,8 @@ export class CategorieBusinessService {
    * @returns {Observable<any>} Un observable contenant un message d'erreur du back-end ou un objet catégorie
    */
   public getCategorieByID(id: number): Promise<any> {
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ categories(id: ' + id + '){ id nom level chemin } }'});
+    const url = `${environment.api_url_categorie}/${id}`;
+    const postResult = this.http.get<any>(url);
     // On créer une promesse
     let promise = new Promise((resolve, reject) => {
       postResult
@@ -210,8 +218,9 @@ export class CategorieBusinessService {
    * @returns {Promise<Boolean>} Une promesse retournant vraie si la catégorie a été supprimé sinon faux
    */
   public supprimerCategorie(categorie: Categorie): Promise<boolean> {
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation { deleteCategorie(id: ' + categorie.id + ')}'});
+    const url = `${environment.api_url_categorie}/${categorie.id}`;
+    const postResult = this.http.get<any>(url);
+
     // On créer une promesse
     let promise = new Promise<boolean>((resolve) => {
       postResult
@@ -289,8 +298,8 @@ export class CategorieBusinessService {
   }
 
   public updateCategorie(id: number, nouveauNom: string): Promise<any> {
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: 'mutation { updateCategorie(id: ' + id + ', nom:"' + nouveauNom + '"){ id nom level }}'});
+    const url = `${environment.api_url_categorie}/idCategorie/${id}/nomCategorie/${nouveauNom}`;
+    const postResult = this.http.put<any>(url, httpOptions);
     // On créer une promesse
     let promise = new Promise<any>((resolve) => {
       postResult
