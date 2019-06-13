@@ -21,13 +21,14 @@ export class CategoriedataService {
   public getChemin(): Promise<any> {
 
     // Récupérer toutes les catégories
-    const postResult = this.http.post(environment.api_url, {query: '{ categories { id nom level chemin{id nom level} } }'});
+    const url = `${environment.api_url_categorie}/all`;
+    const postResult = this.http.get<any>(url);
 
     // fabrication de la promesse
     const promise = new Promise<any>((resolve, reject) => {
 
       postResult.toPromise().then((response) => {
-          const categories = response['categories'];
+          const categories = response;
           // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
           if (categories !== undefined) {
             // On résout notre promesse
@@ -45,6 +46,7 @@ export class CategoriedataService {
     if (categorieEnfant === undefined) {
       categorieEnfant = new Categorie(0, '', null, null);
     }
+
     const postResult = this.http.post(environment.api_url, {
       query: 'mutation { moveCategorie(idADeplacer:' + categorieParent.id + ',idNouveauParent:' + categorieEnfant.id + ')}'
     });
