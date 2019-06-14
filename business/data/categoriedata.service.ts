@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Categorie} from '../../models/Categorie';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../src/environments/environment';
 import {throwError as observableThrowError} from 'rxjs';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +43,6 @@ export class CategoriedataService {
         }
       );
     });
-
     return promise;
   }
 
@@ -47,10 +52,8 @@ export class CategoriedataService {
       categorieEnfant = new Categorie(0, '', null, null);
     }
 
-    const postResult = this.http.post(environment.api_url, {
-      query: 'mutation { moveCategorie(idADeplacer:' + categorieParent.id + ',idNouveauParent:' + categorieEnfant.id + ')}'
-    });
-    // On créer une promesse
+    const url = `${environment.api_url_categorie}/idADeplacer/${categorieParent.id}/idNouveauParent/${categorieEnfant.id}`;
+    const postResult = this.http.put<any>(url, httpOptions);
     const promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promesse
@@ -75,9 +78,11 @@ export class CategoriedataService {
       this.idLastDeletedCategorie = 0;
     }
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {
-      query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + '){id profondeur}}'
-    });
+    // const postResult = this.http.post(environment.api_url, {
+    //   query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + '){id profondeur}}'
+    // });
+    const url = `${environment.api_url_categorie}/lastIdCategorieDeleted/${this.idLastDeletedCategorie}`;
+    const postResult = this.http.put(url, httpOptions);
     const promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
@@ -85,8 +90,8 @@ export class CategoriedataService {
         .then(
           response => {
             // On résout notre promesse
-            if (response['restoreCategorie'].length !== 0) {
-              resolve(response['restoreCategorie'][0]);
+            if (response !== undefined) {
+              resolve(response[0]);
             } else {
               // Pas de categorie
               console.log('pas de categorie');

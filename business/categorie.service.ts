@@ -223,7 +223,7 @@ export class CategorieBusinessService {
     // formé par les categories
     const url = `${environment.api_url_categorie}/all`;
     const postResult = this.http.get<any>(url);
-    //const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur }}'});
+    //const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'});
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
@@ -233,8 +233,7 @@ export class CategorieBusinessService {
             // On résout notre promesse
             console.log(response);
             if (response !== undefined) {
-              resolve(response);
-              console.log('test categorie', response);
+              resolve(response[0]['profondeur']);
             } else {
               // Pas de categorie*
               console.log('pas de categorie');
@@ -244,38 +243,74 @@ export class CategorieBusinessService {
         )
         .catch(this.handleError);
     });
-    // const profondeur = await promise;
-    // if (profondeur != null && profondeur !== undefined) {
-    //
-    //   //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
-    //   //  profondeur.
-    //   let query = '{ categories { nom id ';
-    //   for (let i = 0; i < profondeur; i++) {
-    //     query += 'sousCategories{ nom id ';
-    //   }
-    //   for (let i = 0; i < profondeur; i++) {
-    //     query += '}';
-    //   }
-    //   query += '}}';
-    //
-    //   // On execute cette requete
-    //   const postResult = this.http.post(environment.api_url, {query: query});
-    //   let promise = new Promise<any>((resolve) => {
-    //     postResult
-    //     // On transforme en promise
-    //       .toPromise()
-    //       .then(
-    //         response => {
-    //           // On résout notre promesse et on renvoi l'objet json
-    //           resolve(response);
-    //
-    //         }
-    //       )
-    //       .catch(this.handleError);
-    //   });
-    return promise;
-    // }
+    const profondeur = await promise;
+    if (profondeur != null && profondeur !== undefined) {
+
+      //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
+      //  profondeur.
+      let query = '{ categories { nom id ';
+      for (let i = 0; i < profondeur; i++) {
+        query += 'sousCategories{ nom id ';
+      }
+      for (let i = 0; i < profondeur; i++) {
+        query += '}';
+      }
+      query += '}}';
+
+      // On execute cette requete
+      const postResult = this.http.post(environment.api_url, {query: query});
+      let promise = new Promise<any>((resolve) => {
+        postResult
+        // On transforme en promise
+          .toPromise()
+          .then(
+            response => {
+              // On résout notre promesse et on renvoi l'objet json
+              resolve(response);
+
+            }
+          )
+          .catch(this.handleError);
+      });
+      return promise;
+    }
   }
+
+  // public async getTree(): Promise<any> {
+  //   // On récupère l'objet Observable retourné par la requête post qui permet d'obtenir la profondeur de l'arbre
+  //   // formé par les categories
+  //   const url = `${environment.api_url_categorie}/all`;
+  //   const postResult = this.http.get<any>(url);
+  //   //const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'});
+  //   let promise = new Promise<any>((resolve) => {
+  //     postResult
+  //     // On transforme en promise
+  //       .toPromise()
+  //       .then(
+  //         response => {
+  //           // On résout notre promesse
+  //           console.log(response);
+  //           if (response !== undefined) {
+  //             resolve(response);
+  //           } else {
+  //             // Pas de categorie*
+  //             console.log('pas de categorie');
+  //             resolve([]);
+  //           }
+  //         }
+  //       )
+  //       .catch(this.handleError);
+  //   });
+  //   const tableau: Categorie[] = await promise;
+  //   let idcategorie: any;
+  //   for (let i = 0; i < tableau.length; i++) {
+  //     if (tableau[i].level === 1) {
+  //       idcategorie = i;
+  //     }
+  //   }
+  //   console.log(tableau[idcategorie]);
+  //   return tableau[idcategorie];
+  // }
 
   public updateCategorie(id: number, nouveauNom: string): Promise<any> {
     const url = `${environment.api_url_categorie}/nom/${nouveauNom}/id/${id}`;
