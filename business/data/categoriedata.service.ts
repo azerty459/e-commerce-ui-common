@@ -132,6 +132,9 @@ export class CategoriedataService {
           .catch(this.handleError);
       });
       return promise;
+      // remplacer cette méthode par un appel rest et verifier que ca fait toujour le même resultat dans le front
+      // -appel rest (url + service back) + faire l'appel rest ici
+      // -verifier le resultat avant transformation et après
     }
   }
 

@@ -196,7 +196,7 @@ export class CategorieBusinessService {
    */
   public supprimerCategorie(categorie: Categorie): Promise<boolean> {
     const url = `${environment.api_url_categorie}/${categorie.id}`;
-    const postResult = this.http.get<any>(url);
+    const postResult = this.http.delete<any>(url);
 
     // On créer une promesse
     let promise = new Promise<boolean>((resolve) => {
@@ -206,7 +206,7 @@ export class CategorieBusinessService {
         .then(
           response => {
             // On résout notre promesse
-            resolve(response['deleteCategorie']);
+            resolve(response);
           }
         )
         .catch(this.handleError);
