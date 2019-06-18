@@ -112,7 +112,6 @@ export class ProduitBusiness {
 
       postResult.toPromise().then(
         (response) => {
-          console.log(response);
           const pagination = response;
           const array = [];
           pagination.produits.map((produit) => {

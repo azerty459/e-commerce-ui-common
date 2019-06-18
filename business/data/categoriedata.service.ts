@@ -1,8 +1,14 @@
 import {Injectable} from '@angular/core';
 import {Categorie} from '../../models/Categorie';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {environment} from '../../../src/environments/environment';
 import {throwError as observableThrowError} from 'rxjs';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+};
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +27,14 @@ export class CategoriedataService {
   public getChemin(): Promise<any> {
 
     // Récupérer toutes les catégories
-    const postResult = this.http.post(environment.api_url, {query: '{ categories { id nom level chemin{id nom level} } }'});
+    const url = `${environment.api_url_categorie}/all`;
+    const postResult = this.http.get<any>(url);
 
     // fabrication de la promesse
     const promise = new Promise<any>((resolve, reject) => {
 
       postResult.toPromise().then((response) => {
-          const categories = response['categories'];
+          const categories = response;
           // De la réponse de post, on ne garde que la partie "categories" et on mappe chacun de ces objets en objet Categorie
           if (categories !== undefined) {
             // On résout notre promesse
@@ -36,7 +43,6 @@ export class CategoriedataService {
         }
       );
     });
-
     return promise;
   }
 
@@ -45,10 +51,9 @@ export class CategoriedataService {
     if (categorieEnfant === undefined) {
       categorieEnfant = new Categorie(0, '', null, null);
     }
-    const postResult = this.http.post(environment.api_url, {
-      query: 'mutation { moveCategorie(idADeplacer:' + categorieParent.id + ',idNouveauParent:' + categorieEnfant.id + ')}'
-    });
-    // On créer une promesse
+
+    const url = `${environment.api_url_categorie}/idADeplacer/${categorieParent.id}/idNouveauParent/${categorieEnfant.id}`;
+    const postResult = this.http.put<any>(url, httpOptions);
     const promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promesse
@@ -68,14 +73,12 @@ export class CategoriedataService {
    * Methode permettant l'envoi de la requéte afin de restaurer la dernière catégorie supprimée
    * @returns {Promise<any>} true si succès false si echec
    */
-  public async restoreLastDeletedCategorie(): Promise<any> {
+  public async restoreLastDeletedCategorie() {
     if (this.idLastDeletedCategorie === undefined) {
       this.idLastDeletedCategorie = 0;
     }
-    // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {
-      query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + '){id profondeur}}'
-    });
+    const url = `${environment.api_url_categorie}/lastIdCategorieDeleted/${this.idLastDeletedCategorie}`;
+    const postResult = this.http.put(url, httpOptions);
     const promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
@@ -83,49 +86,16 @@ export class CategoriedataService {
         .then(
           response => {
             // On résout notre promesse
-            if (response['restoreCategorie'].length !== 0) {
-              resolve(response['restoreCategorie'][0]);
+            if (response !== undefined) {
+              resolve(response);
             } else {
-              // Pas de categorie
-              console.log('pas de categorie');
               resolve([]);
             }
           }
         )
         .catch(this.handleError);
     });
-    const response = await promise;
-    const profondeur = response.profondeur;
-    const id = response.id;
-    if (profondeur != null && profondeur !== undefined) {
-
-      //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
-      //  profondeur.
-      let query = '{ categories(id:' + id + ') { nom id ';
-      for (let i = 0; i < profondeur; i++) {
-        query += 'sousCategories{ nom id ';
-      }
-      for (let i = 0; i < profondeur; i++) {
-        query += '}';
-      }
-      query += '}}';
-
-      // On execute cette requete
-      const postResult = this.http.post(environment.api_url, {query: query});
-      let promise = new Promise<any>((resolve) => {
-        postResult
-        // On transforme en promise
-          .toPromise()
-          .then(
-            response => {
-              // On résout notre promesse et on renvoi l'objet json
-              resolve(response);
-            }
-          )
-          .catch(this.handleError);
-      });
-      return promise;
-    }
+    return await promise;
   }
 
   private handleError(error: HttpErrorResponse | any) {
