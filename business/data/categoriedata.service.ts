@@ -73,14 +73,10 @@ export class CategoriedataService {
    * Methode permettant l'envoi de la requéte afin de restaurer la dernière catégorie supprimée
    * @returns {Promise<any>} true si succès false si echec
    */
-  public async restoreLastDeletedCategorie(): Promise<any> {
+  public async restoreLastDeletedCategorie() {
     if (this.idLastDeletedCategorie === undefined) {
       this.idLastDeletedCategorie = 0;
     }
-    // On récupère l'objet Observable retourné par la requête post
-    // const postResult = this.http.post(environment.api_url, {
-    //   query: 'mutation { restoreCategorie(idNouveauParent:' + this.idLastDeletedCategorie + '){id profondeur}}'
-    // });
     const url = `${environment.api_url_categorie}/lastIdCategorieDeleted/${this.idLastDeletedCategorie}`;
     const postResult = this.http.put(url, httpOptions);
     const promise = new Promise<any>((resolve) => {
@@ -91,51 +87,15 @@ export class CategoriedataService {
           response => {
             // On résout notre promesse
             if (response !== undefined) {
-              resolve(response[0]);
+              resolve(response);
             } else {
-              // Pas de categorie
-              console.log('pas de categorie');
               resolve([]);
             }
           }
         )
         .catch(this.handleError);
     });
-    const response = await promise;
-    const profondeur = response.profondeur;
-    const id = response.id;
-    if (profondeur != null && profondeur !== undefined) {
-
-      //  Ici on ecrit la réquéte permettant d'otenir le Json representant l'arbre de categorie avec la bonne
-      //  profondeur.
-      let query = '{ categories(id:' + id + ') { nom id ';
-      for (let i = 0; i < profondeur; i++) {
-        query += 'sousCategories{ nom id ';
-      }
-      for (let i = 0; i < profondeur; i++) {
-        query += '}';
-      }
-      query += '}}';
-
-      // On execute cette requete
-      const postResult = this.http.post(environment.api_url, {query: query});
-      let promise = new Promise<any>((resolve) => {
-        postResult
-        // On transforme en promise
-          .toPromise()
-          .then(
-            response => {
-              // On résout notre promesse et on renvoi l'objet json
-              resolve(response);
-            }
-          )
-          .catch(this.handleError);
-      });
-      return promise;
-      // remplacer cette méthode par un appel rest et verifier que ca fait toujour le même resultat dans le front
-      // -appel rest (url + service back) + faire l'appel rest ici
-      // -verifier le resultat avant transformation et après
-    }
+    return await promise;
   }
 
   private handleError(error: HttpErrorResponse | any) {

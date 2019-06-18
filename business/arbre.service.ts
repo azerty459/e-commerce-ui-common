@@ -158,7 +158,6 @@ export class ArbreService {
       // On test l'objet pour savoir si il possède des sous categories
       if (values.sousCategories === null || values.sousCategories === undefined || values.sousCategories[0] === undefined) {
         // L'objet ne possède pas de sous categories c'est une feuille de l'arbre
-
       } else {
         // L'objet possède des sous catégories c'est une branche de l'arbre
         // On rappelle donc en récursif la méthode
@@ -171,32 +170,6 @@ export class ArbreService {
     }
     return data;
   }
-
-  // buildFileTree(value: any, level: number): CategorieNode[] {
-  //   const data: any[] = [];
-  //
-  //   for (const k in value) {
-  //     const values = value[k];
-  //     console.log(values);
-  //     const node = new CategorieNode();
-  //     node.nomCategorie = values.nom;
-  //     node.id = values.id;
-  //     // On test l'objet pour savoir si il possède des sous categories
-  //     if (values.sousCategories === null || values.sousCategories === undefined || values.sousCategories[0] === undefined) {
-  //       // L'objet ne possède pas de sous categories c'est une feuille de l'arbre
-  //
-  //     } else {
-  //       // L'objet possède des sous catégories c'est une branche de l'arbre
-  //       // On rappelle donc en récursif la méthode
-  //       node.children = this.buildFileTree(values.sousCategories, level + 1);
-  //     }
-  //     for (const i in node.children) {
-  //       node.children[i].idParent = node.id;
-  //     }
-  //     data.push(node);
-  //   }
-  //   return data;
-  // }
 
   /**
    * Methode permettant de supprimer visuelement une sous categorie
@@ -282,7 +255,7 @@ export class ArbreService {
   public async restoreLastDeletedNode() {
     const response = await this.categoriedataBusiness.restoreLastDeletedCategorie();
     console.log(this.lastDeletedParentnode);
-    this.insertItem(this.lastDeletedParentnode, this.buildFileTree(response.categories, 0)[0]);
+    this.insertItem(this.lastDeletedParentnode, this.buildFileTree(response, 0)[0]);
   }
 }
 
