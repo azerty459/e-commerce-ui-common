@@ -219,11 +219,8 @@ export class CategorieBusinessService {
    * @returns {Observable<Categorie[]>} Un observable qui contient un objet json representant l'arbre des categories
    */
   public async getTree() {
-    // On récupère l'objet Observable retourné par la requête post qui permet d'obtenir la profondeur de l'arbre
-    // formé par les categories
-    const url = `${environment.api_url_categorie}/all`;
+    const url = `${environment.api_url_categorie}/tree`;
     const postResult = this.http.get<any>(url);
-    //const postResult = this.http.post(environment.api_url, {query: '{ categories { nom profondeur} }'});
     let promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promise
@@ -242,14 +239,7 @@ export class CategorieBusinessService {
         .catch(this.handleError);
     });
     const tableau: Categorie[] = await promise;
-    let tableauDeNiveau1 = [];
-    let indice = 0;
-    for (let i = 0; i < tableau.length; i++) {
-      if (tableau[i].level === 1) {
-        tableauDeNiveau1[indice++] = tableau[i];
-      }
-    }
-    return tableauDeNiveau1;
+    return tableau;
   }
 
   public updateCategorie(id: number, nouveauNom: string): Promise<any> {
