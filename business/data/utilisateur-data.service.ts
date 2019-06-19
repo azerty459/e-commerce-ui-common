@@ -21,7 +21,7 @@ export class UtilisateurDataService {
 
   public getUtilisateurById(id: number): Promise<Utilisateur> {
 
-    const url = `${environment.api_url2}/${id}`;
+    const url = `${environment.api_url_utilisateur}/${id}`;
     return this.http.get<Utilisateur>(url).toPromise();
   }
 
@@ -35,20 +35,20 @@ export class UtilisateurDataService {
       utilisateur.nom = '';
     }
 
-    const url = environment.api_url2;
+    const url = environment.api_url_utilisateur;
     return this.http.post<Utilisateur>(url, utilisateur, httpOptions).toPromise();
   }
 
   public updateUtilisateur(utilisateur: Utilisateur): Promise<Utilisateur> {
 
-    const url = environment.api_url2;
+    const url = environment.api_url_utilisateur;
     return this.http.put<Utilisateur>(url, utilisateur, httpOptions).toPromise();
   }
 
   public deleteUtilisateur(utilisateur: Utilisateur): Promise<any> {
 
     const id = utilisateur.id;
-    const url = `${environment.api_url2}/${id}`;
+    const url = `${environment.api_url_utilisateur}/${id}`;
     return this.http.delete(url, httpOptions).toPromise();
   }
 

@@ -2,11 +2,17 @@ import {throwError as observableThrowError} from 'rxjs';
 import {Produit} from '../models/Produit';
 import {Injectable} from '@angular/core';
 import {environment} from '../../src/environments/environment';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import 'rxjs/add/observable/of';
 import {Avis} from '../models/Avis';
 import 'rxjs/add/operator/map';
 
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json'
+  })
+};
 
 /**
  * Business permettant de gérer les requêtes au niveau de l'api pour l'objet produit.
@@ -21,19 +27,17 @@ export class AvisService {
 
   public ajoutAvis(avis: Avis): Promise<Produit> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {
-      query: 'mutation{addAvisClient(avis:{note:' + avis.note
-        + ',refProduit:"' + avis.refProduit + '",description:"' + avis.description + '"}){id description note}}'
-    });
+    const url = `${environment.api_url_avisClient}`;
+    const postResult = this.http.post(url, avis, httpOptions);
     // On créer une promesse
-    const promise = new Promise<Produit>((resolve) => {
+    const promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promesse
         .toPromise()
         .then(
           response => {
             // On résout notre promesse
-            resolve(response['addAvisClients']);
+            resolve(response);
           }
         )
         .catch(this.handleError);
@@ -43,16 +47,16 @@ export class AvisService {
 
   public getAvis(produit: Produit): Promise<any> {
     // On récupère l'objet Observable retourné par la requête post
-    const postResult = this.http.post(environment.api_url, {query: '{ avisClient(ref: "' + produit.ref + '") {id description note } }'});
+    const url = `${environment.api_url_avisClient}/allByRef/${produit.ref}`;
+    const postResult = this.http.get<any>(url);
     // On créer une promesse
-    const promise = new Promise<Produit>((resolve) => {
+    const promise = new Promise<any>((resolve) => {
       postResult
       // On transforme en promesse
         .toPromise()
         .then(
           response => {
-            console.log(response['avisClient']);
-            const avis = response['avisClient'];
+            const avis = response;
             // On résout notre promesse
             const arrayAvis = avis.map(
               (avis) => new Avis(avis.id, avis.description, avis.note, null, produit.ref)
