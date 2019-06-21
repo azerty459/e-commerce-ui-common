@@ -7,6 +7,7 @@ export class FiltreService {
   public categorieForBreadCrum: Categorie = null;
   public produits;
   private DEFAULT_PRODUIT_PAR_PAGE = 5;
+  private DEFAULT_NAME_OF_TRI = 'Nom';
 
   constructor() {
   }
@@ -15,12 +16,25 @@ export class FiltreService {
     localStorage.setItem('filtreNbProduitParPage', '' + produitParPage);
   }
 
+  public saveNameOfTri(nameOfTri: string) {
+    localStorage.setItem('filtreNameOfTri', '' + nameOfTri);
+  }
+
   public getNbProduitParPage() {
     const produitParPage = localStorage.getItem('filtreNbProduitParPage');
     if (produitParPage === undefined || produitParPage === null) {
       return this.DEFAULT_PRODUIT_PAR_PAGE;
     } else {
       return parseInt(produitParPage);
+    }
+  }
+
+  public getNameOfTri() {
+    const nameOfTri = localStorage.getItem('filtreNameOfTri');
+    if (nameOfTri === undefined || nameOfTri === null) {
+      return this.DEFAULT_NAME_OF_TRI;
+    } else {
+      return nameOfTri;
     }
   }
 

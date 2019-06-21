@@ -103,8 +103,8 @@ export class ProduitBusiness {
     if (page === undefined) {
       page = 1;
     }
-
-    const url = `${environment.api_url_pagination}/type/produit/numPage/${page}/numberByPage/${nombreDeProduit}/nom/${text}/idCategorie/${categorieId}/orderBy/Nom`;
+    let nameOfTri = localStorage.getItem('filtreNameOfTri');
+    const url = `${environment.api_url_pagination}/type/produit/numPage/${page}/numberByPage/${nombreDeProduit}/nom/${text}/idCategorie/${categorieId}/orderBy/${nameOfTri}`;
     const postResult = this.http.get<any>(url);
 
 
