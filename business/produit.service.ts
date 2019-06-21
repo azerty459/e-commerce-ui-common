@@ -148,7 +148,7 @@ export class ProduitBusiness {
     this.paginationDataService.paginationProduit.tableau = result.tableau;
     this.paginationDataService.paginationProduit.pageMin = result.pageMin;
     // On est dans le cadre d'une recherche (sauf si la chaîne recherchée est de longueur 0)
-    if (this.searchedText.length === 0) {
+    if (this.searchedText !== undefined) {
       console.log('pas de recherche texte vide');
     }
     // pour le fil d'arianne
@@ -173,6 +173,7 @@ export class ProduitBusiness {
    * @param {number} nombreDeProduit Le nombre de produits voulu dans la page
    * @returns {Observable<Pagination>} Un observable contenant un objet pagination
    */
+
   public getProduitByPagination(page: number, nombreDeProduit: number, nameOfTri: String): Promise<Pagination> {
 
     // Stockage des valeurs de la pagination
